@@ -90,7 +90,7 @@ export default function Home () {
             </Link>   
         
         {/* Videos*/}
-        {/* <Link href = "/videos" style={{marginHorizontal:'auto'}} asChild> */}
+            <Link href = "/videos" style={{marginHorizontal:'auto'}} asChild>
             <Pressable style = {styles.button}>
              <ImageBackground
             //  this link is a placeholder
@@ -101,10 +101,11 @@ export default function Home () {
              <Text style = {styles.buttonText}>Videos </Text> 
              </ImageBackground>
             </Pressable>
+            </Link>
            
         
         {/* 3D Models*/}
-        {/* <Link href = "/models" style={{marginHorizontal:'auto'}} asChild> */}
+            <Link href = "/models" style={{marginHorizontal:'auto'}} asChild>
             <Pressable style = {styles.button}>
              <ImageBackground
             //  this link is a placeholder
@@ -115,10 +116,11 @@ export default function Home () {
              <Text style = {styles.buttonText}>3D Models </Text> 
              </ImageBackground>
             </Pressable>
+            </Link>
             
         
         {/*History*/}
-        {/* <Link href = "/history" style={{marginHorizontal:'auto'}} asChild> */}
+            <Link href = "/history" style={{marginHorizontal:'auto'}} asChild>
             <Pressable style = {styles.button}>
              <ImageBackground
             //  this link is a placeholder
@@ -129,10 +131,11 @@ export default function Home () {
              <Text style = {styles.buttonText}>History </Text> 
              </ImageBackground> 
             </Pressable>
+            </Link>
             
         
         {/*Events*/}
-        {/* <Link href = "/events" style={{marginHorizontal:'auto'}} asChild> */}
+            <Link href = "/events" style={{marginHorizontal:'auto'}} asChild>
             <Pressable style = {styles.button}>
              <ImageBackground
             //  this link is a placeholder
@@ -143,10 +146,10 @@ export default function Home () {
              <Text style = {styles.buttonText}>Events </Text> 
              </ImageBackground>
             </Pressable>
-            
-        
+            </Link>
+
         {/*Guestbook*/}
-        {/* <Link href = "/guestbook" style={{marginHorizontal:'auto'}} asChild> */}
+            <Link href = "/guestbook" style={{marginHorizontal:'auto'}} asChild>
             <Pressable style = {styles.button}>
              <ImageBackground
             //  this link is a placeholder
@@ -154,9 +157,10 @@ export default function Home () {
               style = {styles.buttonImage}
               imageStyle={{borderRadius:30}}
               >
-             <Text style = {styles.buttonText}>Guestbook </Text> 
+             <Text style = {styles.buttonText}>Guestbook</Text> 
              </ImageBackground>
             </Pressable>
+            </Link>
               </View>
               
         {/* Administrative button */}
