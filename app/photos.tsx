@@ -16,20 +16,22 @@ for (const key in photosList){
   photoArray.push(photosList[key].Filename);
 }
 
-console.log(photoArray[0]);
+// console.log(photoArray[0]);
 
 return (
   photoArray
 )
 
 }
+//So *THIS* is the correct way to display the path of the photo. How am I going to get the filename to replace the end of this string???
+const testImages = ["http://localhost:8081/assets/?unstable_path=.%2Fassets%2Fphotos/test.png","http://localhost:8081/assets/?unstable_path=.%2Fassets%2Fhome/olom001.jpg" ];
 
 
 
   return (
     //The problem may have something to do with this. Make some comments to debug
     <Gallery
-    data ={givePhotos()}
+    data ={testImages}
     onIndexChange={(newIndex) => {
       console.log(newIndex);
     }}
