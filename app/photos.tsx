@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
-import Gallery from 'react-native-awesome-gallery';
 import React from 'react';
+import ImageView from '@techvox/react-native-image-viewing'
 import * as photosList from '../assets/photos/photoData.json';
 
 const photos = () => {
     console.log("This is the photos page!")
 
 //OK...so this is going to loop through the json file and return JUST the photo for now. We'll see if it works
-//UPDATE: This doesn't work, but we'll figure out why eventually
+//UPDATE: This doesn't work, but we'll figure out why eventually. 
+// When it returns an array, it isn't recognized by the image gallery functionality. Maybe I'm calling the givePhotos function wrong?
 const givePhotos = () => {
 
 let photoArray = [];
@@ -16,7 +17,6 @@ for (const key in photosList){
   photoArray.push(photosList[key].Filename);
 }
 
-// console.log(photoArray[0]);
 
 return (
   photoArray
@@ -29,18 +29,11 @@ const testImages = ["http://localhost:8081/assets/?unstable_path=.%2Fassets%2Fph
 
 
   return (
-    //The problem may have something to do with this. Make some comments to debug
-    <Gallery
-    data ={testImages}
-    onIndexChange={(newIndex) => {
-      console.log(newIndex);
-    }}
-    >
-    </Gallery>
+   //Trying something different. This is a placeholder
 
-    // <View style={styles.container}>
-    //   <Text>Photo gallery in progress!!</Text>
-    // </View>
+    <View style={styles.container}>
+      <Text>Photo gallery in progress!!</Text>
+    </View>
 
   )
 }
