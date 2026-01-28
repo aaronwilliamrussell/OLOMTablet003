@@ -1,5 +1,23 @@
-import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native'
+import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, FlatList } from 'react-native'
 import React from 'react'
+
+//This  is just some sample data:
+
+const demoComments = [
+    {
+        "Index" : 1,
+        "Date": "June 2, 2026",
+        "Name" : "Bobby",
+        "Comment": "Hey. This is my first comment"
+    },
+
+     {
+        "Index" : 2,
+        "Date": "June 3, 2026",
+        "Name" : "Hank",
+        "Comment": "I wish this church used propane-based heating"
+    }
+]
 
 const guestbook = () => {
 //Functionality for leaving a comment along with name and date
@@ -13,7 +31,7 @@ const guestbook = () => {
     <View style = {styles.container}>
 
       {/* Submission form */}
-      <View style = {styles.commentsForm}>
+      <KeyboardAvoidingView style = {styles.commentsForm} behavior='padding' keyboardVerticalOffset={10}>
 
       {/* Name: */}
       <Text style = {styles.titleText}>Name:</Text>
@@ -25,7 +43,7 @@ const guestbook = () => {
       <Pressable style = {styles.submitButton}>
         <Text style = {styles.buttonText}>Submit</Text>
       </Pressable>
-      </View>
+      </KeyboardAvoidingView>
       
       
       {/* Comments Section */}
@@ -34,10 +52,24 @@ const guestbook = () => {
 
       {/* Comments Viewer */}
       <View style = {styles.commentsViewer}>
-        {/* There will be things in here eventually */}
-      </View> 
-      </View>
+        {/* Can we put a flatlist in here without breaking it? If this doesn't work, copy, paste and put it somewhere else */}
+        <FlatList 
+        data = {demoComments} 
+        keyExtractor = {(item) => item.Index.toString()} 
+        renderItem={({item}) => (
+          <View style = {styles.commentEntry}>
 
+            <Text>{item.Name}</Text>
+            <Text>{"\n"}{item.Comment} </Text>
+            <Text>{"\n"}{item.Date} </Text>
+        
+          </View>
+        )}/>
+
+      </View> 
+
+      </View>
+      
     </View>
   )
 }
@@ -84,7 +116,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(110, 110, 110, 0.51)',
     backgroundColor: 'rgb(255, 255, 255)',
     borderRadius: 10,
-    padding:5
+    padding:5,
+    fontSize:30
 
   },
     commentInput: {
@@ -96,7 +129,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(255, 255, 255)',
     borderRadius: 10, 
     textAlign: 'auto',
-    padding:5
+    padding:5,
+    fontSize:30
   },
 
   submitButton:{
@@ -127,5 +161,11 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     textAlign: 'center',
   },
+
+  commentEntry: {
+    flexDirection: 'row',
+    padding: 10
+
+  }
   
 })
