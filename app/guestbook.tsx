@@ -1,30 +1,58 @@
 import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, FlatList } from 'react-native'
-import React from 'react'
+import React, {useState} from 'react'
+
+type EntryType = {
+  id: number;
+  datePosted: string;
+  name: string;
+  comment: string;
+
+};
+
+export default function guestbook () {
+//Functionality for leaving and viewing comments. Admins have the ability to delete posts!
+
 
 //This  is just some sample data:
 
-const demoComments = [
+const demoEntries = [
     {
-        "Index" : 1,
-        "Date": "June 2, 2026",
-        "Name" : "Bobby",
-        "Comment": "Hey. This is my first comment"
+        "id" : 1,
+        "datePosted": "June 2, 2026",
+        "name" : "Bobby",
+        "comment": "Hey. This is my first comment"
     },
 
      {
-        "Index" : 2,
-        "Date": "June 3, 2026",
-        "Name" : "Hank",
-        "Comment": "I wish this church used propane-based heating"
+        "id" : 2,
+        "datePosted": "June 3, 2026",
+        "name" : "Hank",
+        "comment": "I'll tell you what: Propane heating would be a great way to keep this church warm in the winter"
     }
 ]
 
-const guestbook = () => {
-//Functionality for leaving a comment along with name and date
+//The states of the component
 
+const [entries, setEntries] = useState<EntryType[]>(demoEntries);
+const [name, setName] = useState<string>('');
+const [comment, setComment] = useState<string>('');
 
+//Adding a new comment 
 
+const addEntry = () => {
+    const newEntry = {
+      id: Math.random(),
+      datePosted: new Date().toDateString(),
+      name: name,
+      comment: comment
+    };
 
+    entries.push(newEntry);
+    setEntries(entries);
+    setName('');
+    setComment('');
+
+}
 
 
   return (
@@ -35,12 +63,23 @@ const guestbook = () => {
 
       {/* Name: */}
       <Text style = {styles.titleText}>Name:</Text>
-      <TextInput style = {styles.nameInput}></TextInput>
+      <TextInput 
+      style = {styles.nameInput} 
+      onChangeText={(name) => setName(name)}
+      value = {name}
+      ></TextInput>
 
       {/* Comment */}
       <Text style = {styles.titleText}>Comment:</Text>
-      <TextInput multiline placeholder ="Leave us a message!" style = {styles.commentInput}></TextInput>
-      <Pressable style = {styles.submitButton}>
+      <TextInput 
+      multiline placeholder ="Leave us a message!" 
+      style = {styles.commentInput}
+      onChangeText={(comment) => setComment(comment)}
+      value = {comment}
+      ></TextInput>
+
+      {/* Button */}
+      <Pressable style = {styles.submitButton} onPress={() => addEntry()}> {/* <---- get rid of this after!!!*/}
         <Text style = {styles.buttonText}>Submit</Text>
       </Pressable>
       </KeyboardAvoidingView>
@@ -54,16 +93,10 @@ const guestbook = () => {
       <View style = {styles.commentsViewer}>
         {/* Can we put a flatlist in here without breaking it? If this doesn't work, copy, paste and put it somewhere else */}
         <FlatList 
-        data = {demoComments} 
-        keyExtractor = {(item) => item.Index.toString()} 
+        data = {entries} 
+        keyExtractor = {(item) => item.id.toString()} 
         renderItem={({item}) => (
-          <View style = {styles.commentEntry}>
-
-            <Text>{item.Name}</Text>
-            <Text>{"\n"}{item.Comment} </Text>
-            <Text>{"\n"}{item.Date} </Text>
-        
-          </View>
+          <EntryItem entry = {item} />
         )}/>
 
       </View> 
@@ -74,7 +107,20 @@ const guestbook = () => {
   )
 }
 
-export default guestbook
+//Here's a component for an entry. Make sure it *returns* the view
+const EntryItem = ({entry} : {entry: EntryType}) => {
+
+  return (
+  <View style = {styles.commentEntry}>
+
+            <Text style = {styles.commentName}>{entry.name}</Text>
+            <Text style = {styles.commentComment}>{"\n"}{entry.comment} </Text>
+            <Text style = {styles.commentDate}>{"\n"}{entry.datePosted} </Text>
+            <View style = {styles.lineSeparator}></View>
+        
+          </View>
+          )  
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -163,8 +209,36 @@ const styles = StyleSheet.create({
   },
 
   commentEntry: {
-    flexDirection: 'row',
-    padding: 10
+    flexDirection: 'column',
+    padding: 20,
+
+  },
+
+  commentName: {
+    color:'rgba(61, 61, 61, 0.7)',
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
+
+  commentComment: {
+    color:'rgba(61, 61, 61, 0.7)',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+
+  commentDate: {
+    color:'rgba(61, 61, 61, 0.7)',
+    fontSize: 15,
+    fontWeight: 'bold',
+    
+  },
+  
+  lineSeparator: {
+    backgroundColor:'rgba(61, 61, 61, 0.7)',
+    width: '90%',
+    height: 2,
+    marginTop: 50,
+    alignSelf: 'center'
 
   }
   
