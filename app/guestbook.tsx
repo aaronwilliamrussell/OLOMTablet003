@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, FlatList } from 'react-native'
-import React, {useState} from 'react'
+import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, FlatList, Keyboard } from 'react-native'
+import React, {useEffect, useState} from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type EntryType = {
   id: number;
@@ -33,14 +34,32 @@ const demoEntries = [
 
 //The states of the component
 
-const [entries, setEntries] = useState<EntryType[]>(demoEntries);
+const [entries, setEntries] = useState<EntryType[]>([]);
 const [name, setName] = useState<string>('');
 const [comment, setComment] = useState<string>('');
 
+//Getter function for entries
+
+useEffect( () => {
+  const getEntries = async() => {
+    try {
+      const entries = await AsyncStorage.getItem('my-comment');
+      if (entries !== null){
+        setEntries(JSON.parse(entries))
+      }
+    } 
+    catch (error){
+      console.log (error);
+    }
+  } 
+  getEntries();
+},[])
+
 //Adding a new comment 
 
-const addEntry = () => {
-    const newEntry = {
+const addEntry = async () => {
+
+    try {const newEntry = {
       id: Math.random(),
       datePosted: new Date().toDateString(),
       name: name,
@@ -49,9 +68,14 @@ const addEntry = () => {
 
     entries.push(newEntry);
     setEntries(entries);
+    await AsyncStorage.setItem('my-comment', JSON.stringify(entries));
     setName('');
     setComment('');
-
+    Keyboard.dismiss();
+  }
+  catch(error) {
+    console.log ("Something happened? I dunno");
+  }
 }
 
 
@@ -93,7 +117,7 @@ const addEntry = () => {
       <View style = {styles.commentsViewer}>
         {/* Can we put a flatlist in here without breaking it? If this doesn't work, copy, paste and put it somewhere else */}
         <FlatList 
-        data = {entries} 
+        data = {[...entries].reverse()} 
         keyExtractor = {(item) => item.id.toString()} 
         renderItem={({item}) => (
           <EntryItem entry = {item} />
