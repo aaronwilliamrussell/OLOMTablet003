@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, FlatList, Keyboard } from 'react-native'
+import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, FlatList, Keyboard, TouchableOpacity } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 type EntryType = {
   id: number;
@@ -78,6 +79,18 @@ const addEntry = async () => {
   }
 }
 
+//Deleting a comment
+const deleteComment = async (id:number) => {
+  try {
+    const newComment = entries.filter((entries) => entries.id !== id);
+    await AsyncStorage.setItem("my-comment", JSON.stringify(newComment));
+    setEntries(newComment);
+  } 
+  catch(error) {
+    console.log(error);
+  }
+}
+
 
   return (
     <View style = {styles.container}>
@@ -139,7 +152,12 @@ const EntryItem = ({entry} : {entry: EntryType}) => {
 
             <Text style = {styles.commentName}>{entry.name}</Text>
             <Text style = {styles.commentComment}>{"\n"}{entry.comment} </Text>
+
+            {/* Delete button only viewable in admin mode! */}
+            <TouchableOpacity style={styles.deleteButton}><Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity>
+            
             <Text style = {styles.commentDate}>{"\n"}{entry.datePosted} </Text>
+            
             <View style = {styles.lineSeparator}></View>
         
           </View>
@@ -264,6 +282,10 @@ const styles = StyleSheet.create({
     marginTop: 50,
     alignSelf: 'center'
 
+  },
+
+  deleteButton: {
+    flexDirection: 'row-reverse',
   }
   
 })
