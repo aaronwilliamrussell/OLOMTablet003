@@ -106,6 +106,7 @@ const deleteComment = async (id:number) => {
       style = {styles.nameInput} 
       onChangeText={(name) => setName(name)}
       value = {name}
+      maxLength={50}
       ></TextInput>
 
       {/* Comment */}
@@ -115,6 +116,7 @@ const deleteComment = async (id:number) => {
       style = {styles.commentInput}
       onChangeText={(comment) => setComment(comment)}
       value = {comment}
+      maxLength = {500}
       ></TextInput>
 
       {/* Button */}
