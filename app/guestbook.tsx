@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, FlatList, Keyboard, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, FlatList, Keyboard, TouchableOpacity, Alert } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import {Filter} from 'bad-words'
 
 type EntryType = {
   id: number;
@@ -15,23 +16,8 @@ export default function guestbook () {
 //Functionality for leaving and viewing comments. Admins have the ability to delete posts!
 
 
-//This  is just some sample data:
-
-const demoEntries = [
-    {
-        "id" : 1,
-        "datePosted": "June 2, 2026",
-        "name" : "Bobby",
-        "comment": "Hey. This is my first comment"
-    },
-
-     {
-        "id" : 2,
-        "datePosted": "June 3, 2026",
-        "name" : "Hank",
-        "comment": "I'll tell you what: Propane heating would be a great way to keep this church warm in the winter"
-    }
-]
+//Filter for all those bad words
+const filter = new Filter();
 
 //The states of the component
 
@@ -63,16 +49,32 @@ const addEntry = async () => {
     try {const newEntry = {
       id: Math.random(),
       datePosted: new Date().toDateString(),
-      name: name,
+      name: name || "Anonymous",
       comment: comment
     };
 
+    if (filter.isProfane(comment)) {
+    alert("Inappropriate language!")
+    setName('');
+    setComment('');
+    Keyboard.dismiss();
+  } 
+    else if (comment == ""){
+    alert("Comment cannot be blank")
+    setName('');
+    setComment('');
+    Keyboard.dismiss();
+    }
+
+    else {
     entries.push(newEntry);
     setEntries(entries);
     await AsyncStorage.setItem('my-comment', JSON.stringify(entries));
     setName('');
     setComment('');
+    alert("Submitted!");
     Keyboard.dismiss();
+  }   
   }
   catch(error) {
     console.log ("Something happened? I dunno");
@@ -82,7 +84,7 @@ const addEntry = async () => {
 //Deleting a comment
 const deleteComment = async (id:number) => {
   try {
-    const newComment = entries.filter((entries) => entries.id !== id);
+    const newComment = entries.filter((entry) => entry.id !== id);
     await AsyncStorage.setItem("my-comment", JSON.stringify(newComment));
     setEntries(newComment);
   } 
@@ -133,7 +135,7 @@ const deleteComment = async (id:number) => {
         data = {[...entries].reverse()} 
         keyExtractor = {(item) => item.id.toString()} 
         renderItem={({item}) => (
-          <EntryItem entry = {item} />
+          <EntryItem entry = {item} deleteEntry={deleteComment} />
         )}/>
 
       </View> 
@@ -145,8 +147,7 @@ const deleteComment = async (id:number) => {
 }
 
 //Here's a component for an entry. Make sure it *returns* the view
-const EntryItem = ({entry} : {entry: EntryType}) => {
-
+const EntryItem = ({entry, deleteEntry} : {entry: EntryType, deleteEntry: (id: number) => void}) => {
   return (
   <View style = {styles.commentEntry}>
 
@@ -154,7 +155,13 @@ const EntryItem = ({entry} : {entry: EntryType}) => {
             <Text style = {styles.commentComment}>{"\n"}{entry.comment} </Text>
 
             {/* Delete button only viewable in admin mode! */}
-            <TouchableOpacity style={styles.deleteButton}><Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity>
+            <TouchableOpacity 
+            style={styles.deleteButton}
+            onPress={() => {
+              deleteEntry(entry.id);
+              alert("Deleted entry!");
+            }}>
+            <Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity>
             
             <Text style = {styles.commentDate}>{"\n"}{entry.datePosted} </Text>
             
