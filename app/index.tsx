@@ -14,6 +14,11 @@ import {
 } from 'react-native';
 
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+type LoggedInType = {
+    isLoggedIn: boolean;
+}
 
 export default function Home () {
 
@@ -29,9 +34,9 @@ export default function Home () {
     const [adminButtonText, setText] = useState("Admin");
     
     //Function to log in (add the NFC stuff later!)
-    const adminLogIn = () => {
-        
-        if (!loggedIn){
+    const adminLogIn = async() => {
+        try{
+              if (!loggedIn){
             logIn();
             console.log("You're logged in!");
             //change admin button to say "log out"
@@ -39,12 +44,18 @@ export default function Home () {
             //hide modal
             hide();
             //somehow store locally that the user is logged in
-        }                     
+            await AsyncStorage.setItem('adminpriv', JSON.stringify(!loggedIn));
+            const loggedInTest = await AsyncStorage.getItem('adminpriv')
+            console.log("log in status:" + loggedInTest)
+        }  
+        }
+        catch(error){console.log(error)}                   
     }
 
     //Function that changes what the admin button does depending on if an admin is logged in or not
-    const adminToggle = () => {
-        if(loggedIn){
+    const adminToggle = async() => {
+        try {
+             if(loggedIn){
             logOut();
             console.log("You're logged out!");
             //change admin button to say "admin" again
@@ -52,10 +63,15 @@ export default function Home () {
             //Pop up to say "logged out"?
 
             //change local variable of user login to 'false'
+            await AsyncStorage.setItem('adminpriv', JSON.stringify(!loggedIn));
+            const loggedOutTest = await AsyncStorage.getItem('adminpriv')
+            console.log("log out status:" + loggedOutTest)
         }
         else{
             show();
         }
+        }
+        catch (error){console.log(error)}
     }
    
     

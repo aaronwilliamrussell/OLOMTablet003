@@ -24,6 +24,47 @@ const filter = new Filter();
 const [entries, setEntries] = useState<EntryType[]>([]);
 const [name, setName] = useState<string>('');
 const [comment, setComment] = useState<string>('');
+const[visible, setVisible] = useState(false);
+
+//Show and hide functions for the delete buttons
+const show = () => setVisible(true);
+const hide = () => setVisible(false);
+
+//Getter function to see if I can find the log in info.....
+useEffect( () => {
+  const getLogin = async() => {
+    try {
+      const login = await AsyncStorage.getItem('adminpriv');
+      if (login !== null) {
+        console.log(JSON.parse(login))
+      }
+    }
+    catch (error){
+      console.log(error);
+    }
+  }
+  getLogin();
+},[]
+)
+
+// Check to see if user is admin or not and then return the modal?????
+
+//Copying and pasting old code here. Let's see if it works tomorrow
+
+{/* Delete button only viewable in admin mode! */}
+            // <TouchableOpacity 
+            // style={styles.deleteButton}
+            // onPress={() => {
+            //   deleteEntry(entry.id);
+            //   alert("Deleted entry!");
+            // }}>
+            // <Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity>
+
+
+            //^ uncomment this after
+
+            
+
 
 //Getter function for entries
 
