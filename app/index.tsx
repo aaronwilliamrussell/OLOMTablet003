@@ -16,10 +16,6 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-type LoggedInType = {
-    isLoggedIn: boolean;
-}
-
 export default function Home () {
 
     //Functions for showing and hiding elements

@@ -27,8 +27,8 @@ const [comment, setComment] = useState<string>('');
 const[visible, setVisible] = useState(false);
 
 //Show and hide functions for the delete buttons
-const show = () => setVisible(true);
-const hide = () => setVisible(false);
+const show = () => setVisible(false);
+const hide = () => setVisible(true);
 
 //Getter function to see if I can find the log in info.....
 useEffect( () => {
@@ -38,6 +38,12 @@ useEffect( () => {
       if (login !== null) {
         console.log(JSON.parse(login))
       }
+      if (login == "true"){
+        show();
+      }
+      else {
+        hide();
+      }
     }
     catch (error){
       console.log(error);
@@ -46,25 +52,6 @@ useEffect( () => {
   getLogin();
 },[]
 )
-
-// Check to see if user is admin or not and then return the modal?????
-
-//Copying and pasting old code here. Let's see if it works tomorrow
-
-{/* Delete button only viewable in admin mode! */}
-            // <TouchableOpacity 
-            // style={styles.deleteButton}
-            // onPress={() => {
-            //   deleteEntry(entry.id);
-            //   alert("Deleted entry!");
-            // }}>
-            // <Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity>
-
-
-            //^ uncomment this after
-
-            
-
 
 //Getter function for entries
 
@@ -178,7 +165,7 @@ const deleteComment = async (id:number) => {
         data = {[...entries].reverse()} 
         keyExtractor = {(item) => item.id.toString()} 
         renderItem={({item}) => (
-          <EntryItem entry = {item} deleteEntry={deleteComment} />
+          <EntryItem entry = {item} deleteEntry={deleteComment} visible = {visible} />
         )}/>
 
       </View> 
@@ -190,7 +177,7 @@ const deleteComment = async (id:number) => {
 }
 
 //Here's a component for an entry. Make sure it *returns* the view
-const EntryItem = ({entry, deleteEntry} : {entry: EntryType, deleteEntry: (id: number) => void}) => {
+const EntryItem = ({entry, visible, deleteEntry} : {entry: EntryType, visible:boolean, deleteEntry: (id: number) => void}) => {
   return (
   <View style = {styles.commentEntry}>
 
@@ -198,13 +185,24 @@ const EntryItem = ({entry, deleteEntry} : {entry: EntryType, deleteEntry: (id: n
             <Text style = {styles.commentComment}>{"\n"}{entry.comment} </Text>
 
             {/* Delete button only viewable in admin mode! */}
-            <TouchableOpacity 
+            {/* Will this work? If it doesn't, maybe you need to set a type for visible?? */}
+            {!visible && <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => {
               deleteEntry(entry.id);
               alert("Deleted entry!");
             }}>
-            <Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity>
+            <Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity>}
+
+            {/* Bring this back if you need to! */}
+
+            {/* <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => {
+              deleteEntry(entry.id);
+              alert("Deleted entry!");
+            }}>
+            <Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity> */}
             
             <Text style = {styles.commentDate}>{"\n"}{entry.datePosted} </Text>
             
