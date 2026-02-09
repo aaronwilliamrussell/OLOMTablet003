@@ -28,6 +28,9 @@ export default function Home () {
     const logIn = () => setLoggedIn(true);
     const logOut = () => setLoggedIn(false);
     const [adminButtonText, setText] = useState("Admin");
+
+    //Run checks
+    console.log("Admin status: " + loggedIn)
     
     //Function to log in (add the NFC stuff later!)
     const adminLogIn = async() => {
@@ -41,8 +44,6 @@ export default function Home () {
             hide();
             //somehow store locally that the user is logged in
             await AsyncStorage.setItem('adminpriv', JSON.stringify(!loggedIn));
-            const loggedInTest = await AsyncStorage.getItem('adminpriv')
-            console.log("log in status:" + loggedInTest)
         }  
         }
         catch(error){console.log(error)}                   
@@ -60,8 +61,6 @@ export default function Home () {
 
             //change local variable of user login to 'false'
             await AsyncStorage.setItem('adminpriv', JSON.stringify(!loggedIn));
-            const loggedOutTest = await AsyncStorage.getItem('adminpriv')
-            console.log("log out status:" + loggedOutTest)
         }
         else{
             show();

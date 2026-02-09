@@ -27,8 +27,8 @@ const [comment, setComment] = useState<string>('');
 const[visible, setVisible] = useState(false);
 
 //Show and hide functions for the delete buttons
-const show = () => setVisible(false);
-const hide = () => setVisible(true);
+const show = () => setVisible(true);
+const hide = () => setVisible(false);
 
 //Getter function to see if I can find the log in info.....
 useEffect( () => {
@@ -39,9 +39,11 @@ useEffect( () => {
         console.log(JSON.parse(login))
       }
       if (login == "true"){
+        console.log("Welcome to the guestbook, admin")
         show();
       }
-      else {
+      else if (login == "false"){
+        console.log("Visitor detected")
         hide();
       }
     }
@@ -186,23 +188,13 @@ const EntryItem = ({entry, visible, deleteEntry} : {entry: EntryType, visible:bo
 
             {/* Delete button only viewable in admin mode! */}
             {/* Will this work? If it doesn't, maybe you need to set a type for visible?? */}
-            {!visible && <TouchableOpacity
+            {visible && <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => {
               deleteEntry(entry.id);
               alert("Deleted entry!");
             }}>
             <Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity>}
-
-            {/* Bring this back if you need to! */}
-
-            {/* <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => {
-              deleteEntry(entry.id);
-              alert("Deleted entry!");
-            }}>
-            <Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity> */}
             
             <Text style = {styles.commentDate}>{"\n"}{entry.datePosted} </Text>
             
