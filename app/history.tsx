@@ -50,42 +50,35 @@ useEffect( () => {
 },[]
 )
 
+//Update history page *tentative*
+
+
   //Returned UI Elements
   return (
   <ScrollView>
     <View style = {styles.container}>
-
-      
       <Image
       style= {styles.image}
       source={{uri: 'https://www.heritage.nf.ca/articles/society/images/our-lady-mercy.jpg'}}
       ></Image>
-      <TextInput 
-        multiline placeholder ="Default admin message" 
-        style = {styles.commentInput}> </TextInput>
-
+      
     {/*Hard to see here, but this next part hides the text input if you aren't an admin. It's shorthand, so it might be a little hard
     to understand. Basically, "______?" is asking " if this is true, do this" and the ":" is the else statement */}  
 
-    {/* {!visible? 
+    {!visible? 
     <Text style={styles.text}>
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tristique placerat elit a elementum. Quisque sagittis sed arcu aliquet auctor. Cras dapibus, nibh dictum sagittis laoreet, erat neque sagittis lectus, a sollicitudin ipsum felis eu elit. Suspendisse fermentum lorem non augue dictum accumsan. Mauris arcu felis, sollicitudin nec bibendum id, dictum a lectus. Vestibulum ac venenatis elit. Ut a congue massa. Pellentesque sit amet magna dui. Nunc aliquam id turpis quis dictum. Maecenas urna diam, faucibus quis felis et, ornare posuere velit.
-
-Etiam ante urna, malesuada consequat urna sit amet, pharetra tempor neque. In dignissim, libero ut egestas faucibus, dui lorem consequat tellus, eu sagittis metus ex ut dui. Duis bibendum est eu placerat malesuada. Pellentesque a varius nisi. Curabitur viverra turpis eu orci aliquam, sit amet suscipit est consectetur. Integer eu tempus neque. Duis vel lorem ut felis eleifend cursus. Cras eleifend nisl in posuere congue. Suspendisse dictum sed urna maximus fermentum.
-
-Vivamus eget imperdiet felis. Praesent tincidunt ornare auctor. Proin euismod nisl vel elit mattis, porttitor dignissim odio cursus. Maecenas aliquet ligula id tellus vestibulum tincidunt. Pellentesque finibus, diam eu volutpat feugiat, purus lacus pretium est, molestie tempor urna arcu in velit. Vivamus nec libero iaculis, bibendum massa a, maximus ante. Ut lacinia risus quis ex molestie, a vehicula arcu placerat. In lacus orci, egestas ac congue eu, pellentesque at est.
-
-Quisque eu mattis dolor. Nunc vitae nulla quis augue dapibus tempus in ut ex. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse ultrices, lectus porta vestibulum dictum, nisi justo sollicitudin lacus, ac ultrices nibh libero sit amet justo. Morbi vel quam vel arcu aliquet porta nec eu mi. Curabitur eget urna ac enim interdum scelerisque at et nulla. Fusce at luctus ex, eu dignissim urna. Donec odio tortor, consequat in euismod ut, interdum et dolor. Sed nec erat non metus volutpat tempus. Pellentesque ornare venenatis mauris eget ornare. Quisque ut risus scelerisque, venenatis nibh at, ornare enim. Cras suscipit luctus eros quis vestibulum. Cras feugiat tincidunt sem, nec tempus ante feugiat non. Proin tristique mattis elementum. In non dapibus odio. Praesent est risus, volutpat id consequat ut, pulvinar vel velit.
-
-Fusce blandit interdum nunc vitae dapibus. Nulla bibendum interdum sem, nec tincidunt sapien feugiat ut. Duis eu sapien justo. Sed vel ligula et felis sollicitudin malesuada. Nunc nec elit id tellus sollicitudin consequat. Cras quis dui nisi. Nam sit amet elit vitae tortor consectetur luctus. Maecenas condimentum ac nisi at hendrerit. Aliquam sagittis quam nibh, sit amet fringilla lectus fringilla sed. Pellentesque ut porttitor neque. Vivamus eu maximus sem. Duis non interdum velit, tincidunt faucibus nibh. Fusce mattis porttitor elit eu placerat.
-
+ History page in progress!
 </Text> : 
-
-<TextInput 
-multiline placeholder ="Default admin message" 
-style = {styles.commentInput}> </TextInput>} */}
-    
+<View>
+  <TextInput 
+  multiline placeholder ="Default admin message" 
+  style = {styles.commentInput}
+  > 
+  </TextInput> 
+  <Pressable style = {styles.submitButton}> 
+  <Text style = {styles.buttonText}>Submit</Text>
+  </Pressable>
+</View>  }
     </View>
     
   </ScrollView>
@@ -97,12 +90,9 @@ export default history
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
-    paddingLeft: 40,
-    paddingRight:40,
+    padding:40,
     flexDirection: 'column',
     alignItems:'center',
-    flexWrap: "wrap",
   },
 
   text: {
@@ -112,13 +102,15 @@ const styles = StyleSheet.create({
     },
 
   image: {
+    
     resizeMode: 'contain',
-    height: 800,
-    width: 800,
+    height: 300,
+    width:500,
+    marginBottom: 40
   },
    commentInput: {
-    width: '100%',
-    height: '50%',
+    width: 1000,
+    height: 400,
     marginBottom: '1%',
     borderWidth: 2,
     borderColor: 'rgba(110, 110, 110, 0.51)',
@@ -127,5 +119,22 @@ const styles = StyleSheet.create({
     textAlign: 'auto',
     padding:5,
     fontSize:30
+  },
+   submitButton:{
+    height:'auto',
+    width:'100%',
+    borderRadius: 30, 
+    borderColor: 'rgb(255, 255, 255)',
+    backgroundColor: 'rgba(161, 161, 161, 0.7)',
+    margin: 'auto'
+  },
+  buttonText: {
+    color:'rgb(255, 255, 255)',
+    fontFamily: "arial",
+    fontSize: 60,
+    fontWeight: 'bold',
+    paddingTop: 15,
+    paddingBottom: 15,
+    textAlign: 'center',
   },
 })
