@@ -1,9 +1,26 @@
-import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, FlatList, Keyboard, TouchableOpacity, Alert } from 'react-native'
+import { StyleSheet, Text, View, TextInput, Pressable, Modal, KeyboardAvoidingView, FlatList, Keyboard, TouchableOpacity, Alert } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import {Calendar} from 'react-native-calendars'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import {Filter} from 'bad-words'
+
+type EventType = {
+  id: number;
+  eventDate: string;
+  title: string;
+  location: string;
+  description:string;
+  time: string;
+  amPM: string;
+
+
+};
 
 const events = () => {
+//Filter for all those bad words
+const filter = new Filter();
+
 //Log in authentication
 useEffect( () => {
   const getLogin = async() => {
@@ -14,10 +31,12 @@ useEffect( () => {
       }
       if (login == "true"){
         console.log("Welcome to the event page, admin")
+        show();
         //TODO - show delete/add/edit buttons on events
       }
       else if (login == "false"){
         console.log("Visitor detected")
+        hide();
       }
     }
     catch (error){
@@ -30,10 +49,104 @@ useEffect( () => {
 
 // States  
 
+//Set event
+const [events, setEvents] = useState<EventType[]>([]);
+//Set title of event
+const [title, setTitle] = useState<string>('');
+//Set location of event
+const [location, setLocation] = useState<string>('');
+//Set description of event
+const [description, setDescription] = useState<string>('');
+//Set time of event
+const [time, setTime] = useState<string>('');
+//Set sm/pm of event
+const [amPm, setAmpm] = useState<string>('');
 //Selected date (string)
 const [selected, setSelected] = useState('');
+
+
 //Modal that pops up when you select a date
 const[modal, setModal] = useState(false);
+const showModal = () => setModal(true);
+const hideModal = () => setModal(false);
+//States to show add/edit/delete functions for each event
+const[adminButtons, setAdmin] = useState(false);
+const show = () => setAdmin(true);
+const hide = () => setAdmin(false);
+//States to show event creation modal
+const[eventCreate, setEventCreate] = useState(false);
+const showCreate = () => setEventCreate(true);
+const hideCreate = () => setEventCreate(false);
+
+//Getter function for events
+
+useEffect( () => {
+  const getEvents = async() => {
+    try {
+      const events = await AsyncStorage.getItem('my-events');
+      if (events !== null){
+        setEvents(JSON.parse(events))
+      }
+    } 
+    catch (error){
+      console.log (error);
+    }
+  } 
+  getEvents();
+},[])
+
+//Adding a new event
+
+const addEvent = async () => {
+
+    try {const newEvent = {
+      id: Math.random(),
+      eventDate: selected,
+      title: title,
+      location: location,
+      description: description,
+      time: time,
+      amPM: amPm
+    };
+  
+    
+    if (title || location || description  == ""){
+    alert("Cannot be blank")
+    setTitle('');
+    setLocation('');
+    setDescription('');
+    Keyboard.dismiss();
+    }
+
+    //Maybe put a profanity filter here? I'm not entirely sure yet
+
+    else {
+    events.push(newEvent);
+    setEvents(events);
+    await AsyncStorage.setItem('my-events', JSON.stringify(events));
+    setTitle('');
+    setLocation('');
+    setDescription('');
+    alert("Submitted!");
+    Keyboard.dismiss();
+  }   
+  }
+  catch(error) {
+    console.log ("Something happened? I dunno");
+  }
+}
+
+//Deleting an event
+const deleteEvent = async (id:number) => {
+  try {
+    const newEvent = events.filter((event) => event.id !== id);
+    await AsyncStorage.setItem("my-events", JSON.stringify(newEvent));
+    setEvents(newEvent);
+  } 
+  catch(error) {
+    console.log(error);
+  }
+}
 
 
   return (
@@ -50,29 +163,259 @@ const[modal, setModal] = useState(false);
   current={new Date().toDateString()}
   // Callback that gets called when the user selects a day
   onDayPress={day => {
-    console.log('selected day', day);
+    console.log('selected day:', day);
     setSelected(day.dateString);
+    showModal();
     //Open modal for date 
   }}
   // Mark specific dates as marked (do this later)
   markedDates={{
-    [selected]: {selected: true, disableTouchEvent: true, selectedColor: 'red'}
+    [selected]: {selected: true, disableTouchEvent: false, selectedColor: 'red'}
   }}
 />
+
+{/* Modal for the entry of the day */}
+    <View>
+            <Modal
+            visible = {eventCreate}
+            onRequestClose = {hideCreate}
+            animationType= "fade"
+            transparent>
+                <Pressable style = {styles.eventModalUpper} onPress = {hideModal}/>
+                <KeyboardAvoidingView style= {styles.eventModalLower}>
+                    <Text style = {styles.eventName}>Make an event</Text>
+
+                    {/* Title: */}
+                    <Text style = {styles.eventDescription}>Title:</Text>
+                    <TextInput 
+                    style = {styles.nameInput} 
+                    onChangeText={(title) => setTitle(title)}
+                    value = {title}
+                    maxLength={50}
+                    ></TextInput>
+                     
+                    {/* Location */}
+                    <Text style = {styles.eventDescription}>Location:</Text>
+                    <TextInput 
+                    style = {styles.nameInput}
+                    onChangeText={(location) => setLocation(location)}
+                    value = {location}
+                    maxLength = {50}
+                    ></TextInput>
+
+                    {/* Description */}
+                    <Text style = {styles.eventDescription}>Location:</Text>
+                    <TextInput 
+                    multiline placeholder ="Description" 
+                    style = {styles.commentInput}
+                    onChangeText={(location) => setLocation(location)}
+                    value = {location}
+                    maxLength = {500}
+                    ></TextInput>
+
+                    {/* considering making these as dropdowns instead??? Maybe would be less redundant */}
+                     {/* Time */}
+                    <Text style = {styles.eventDescription}>Time:</Text>
+                    <TextInput 
+                    style = {styles.nameInput}
+                    onChangeText={(time) => setLocation(time)}
+                    value = {time}
+                    maxLength = {50}
+                    ></TextInput>
+
+                     {/* AM or PM? */}
+                    <Text style = {styles.eventDescription}>AM/PM:</Text>
+                    <TextInput 
+                    style = {styles.nameInput}
+                    onChangeText={(amPm) => setLocation(amPm)}
+                    value = {amPm}
+                    maxLength = {50}
+                    ></TextInput>
+
+
+              
+                    {/* Button */}
+                    <Pressable style = {styles.submitButton} onPress={() => addEvent()}> {/* <---- get rid of this after!!!*/}
+                      <Text style = {styles.buttonText}>Submit</Text>
+                    </Pressable>  
+                </KeyboardAvoidingView>
+            </Modal>
+        </View>
+
+        {/* Modal for entries */}
+        <Modal
+            visible = {modal}
+            onRequestClose = {hideModal}
+            animationType= "slide"
+            transparent>
+                <Pressable style = {styles.eventModalUpper} onPress = {hideModal}/>
+                <View style= {styles.eventModalLower}>
+                    <Text>{selected}</Text>
+
+                     {/* Events Viewer Placeholder*/}
+                          <View style = {styles.eventsViewer}>
+                            {/* Got a placeholder for the events per day. This code is subject to change*/}
+                            <FlatList 
+                            data = {[...events].reverse()} 
+                            keyExtractor = {(item) => item.id.toString()} 
+                            renderItem={({item}) => (
+                              <EventItem event = {item} deleteEntry={deleteEvent} visible = {adminButtons} />
+                            )}/>
+                            {adminButtons && <TouchableOpacity
+                            style={styles.addButton}
+                            onPress={() => {
+                              showCreate()
+                            }}
+                            ></TouchableOpacity>}
+                            {/* Put add button here if user is admin */}
+
+                          </View> 
+                </View>
+            </Modal>
     </View>
   )
+}
+
+//Here's a component for an entry. Make sure it *returns* the view. Looooots of stuff to change here
+const EventItem = ({event, visible, deleteEntry} : {event: EventType, visible:boolean, deleteEntry: (id: number) => void}) => {
+  return (
+  <View style = {styles.eventEntry}>
+            
+            <Text style = {styles.eventName}>{event.eventDate} </Text>
+            <Text style = {styles.eventName}>{"\n"}{event.title}</Text>
+            <Text style = {styles.eventDescription}>{"\n"}{event.description} </Text>
+
+            {/* Admin buttons */}
+            {/* Delete button */}
+            {visible && <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => {
+              deleteEntry(event.id);
+              alert("Deleted entry!");
+            }}>
+            <Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity>}
+            {/* Edit button */}
+            {visible && <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => {
+              //Edit entry function call (be sure to put this into the props above)
+              alert("Edited entry!");
+            }}>
+            <Ionicons  name= "pencil-outline" size={30} color={'grey'} /></TouchableOpacity>}
+            
+            
+            
+            <View style = {styles.lineSeparator}></View>
+        
+          </View>
+          )  
 }
 
 export default events
 
 const styles = StyleSheet.create({
     container: {
-    flex:1,
+      flex:1,
   },
 
     calendar: {
       width: 'auto',
       height: 'auto',
     },
+
+    eventModalUpper: {
+      height:100,
+      backgroundColor:'#DDD',
+      opacity:0.5,
+  },
+
+    eventModalLower:{
+      flex: 1, 
+      backgroundColor: 'white',
+      justifyContent: 'center',
+      alignItems: 'center',
+  },
+   eventsViewer: {
+    backgroundColor: 'rgb(255, 255, 255)',
+    borderColor:'rgba(110, 110, 110, 0.51)',
+    borderWidth: 2,
+    borderRadius: 30,
+    width: 'auto',
+    height: '90%',
+  },
+  eventEntry: {
+    flexDirection: 'column',
+    padding: 20,
+
+  },
+   eventName: {
+    color:'rgba(61, 61, 61, 0.7)',
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
+
+  eventDescription: {
+    color:'rgba(61, 61, 61, 0.7)',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  deleteButton: {
+    flexDirection: 'row-reverse',
+  },
+   lineSeparator: {
+    backgroundColor:'rgba(61, 61, 61, 0.7)',
+    width: '90%',
+    height: 2,
+    marginTop: 50,
+    alignSelf: 'center'
+
+  },
+  addButton: {
+    color:'rgba(0, 38, 255, 0.7)',
+    flexDirection:'column',
+    borderColor:'rgba(0, 38, 255, 0.7)',
+    borderRadius:100
+  },
+  nameInput: {
+    flex:0.5,
+    height: 'auto',
+    borderWidth: 2,
+    borderColor: 'rgba(110, 110, 110, 0.51)',
+    backgroundColor: 'rgb(255, 255, 255)',
+    borderRadius: 10,
+    padding:5,
+    fontSize:30
+
+  },
+    commentInput: {
+    flex:5,
+    height: 'auto',
+    marginBottom: '1%',
+    borderWidth: 2,
+    borderColor: 'rgba(110, 110, 110, 0.51)',
+    backgroundColor: 'rgb(255, 255, 255)',
+    borderRadius: 10, 
+    textAlign: 'auto',
+    padding:5,
+    fontSize:30
+  },
+    submitButton:{
+    flex:1,
+    height:'auto',
+    width:'50%',
+    borderRadius: 30, 
+    borderColor: 'rgb(255, 255, 255)',
+    backgroundColor: 'rgba(161, 161, 161, 0.7)',
+    margin: 'auto'
+  },
+
+  buttonText: {
+    color:'rgb(255, 255, 255)',
+    fontFamily: "arial",
+    fontSize: 60,
+    fontWeight: 'bold',
+    paddingTop: 15,
+    textAlign: 'center',
+  },
 
 })
