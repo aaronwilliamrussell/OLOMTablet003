@@ -32,7 +32,6 @@ useEffect( () => {
       if (login == "true"){
         console.log("Welcome to the event page, admin")
         show();
-        //TODO - show delete/add/edit buttons on events
       }
       else if (login == "false"){
         console.log("Visitor detected")
@@ -127,6 +126,8 @@ const addEvent = async () => {
     setTitle('');
     setLocation('');
     setDescription('');
+    setTime('')
+    setAmpm('')
     alert("Submitted!");
     Keyboard.dismiss();
   }   
@@ -146,6 +147,11 @@ const deleteEvent = async (id:number) => {
   catch(error) {
     console.log(error);
   }
+}
+
+//Editing an event (work in progess!!!)
+const editEvent = () => {
+  console.log("Editing event...")
 }
 
 
