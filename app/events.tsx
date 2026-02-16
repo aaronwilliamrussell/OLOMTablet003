@@ -78,13 +78,13 @@ const showCreate = () => setEventCreate(true);
 const hideCreate = () => setEventCreate(false);
 
 //Getter function for events
-
 useEffect( () => {
   const getEvents = async() => {
     try {
       const events = await AsyncStorage.getItem('my-events');
       if (events !== null){
         setEvents(JSON.parse(events))
+        console.log("Events:" + events)
       }
     } 
     catch (error){
@@ -93,6 +93,20 @@ useEffect( () => {
   } 
   getEvents();
 },[])
+
+
+//Function to return only events for the data selected (This somewhat works, but only once. I wonder what's going on)
+
+const getEventForDay = (selectedDate: string) => {
+  const filteredEvents = events.filter((item) => 
+  item.eventDate.includes(selectedDate)
+  );
+  console.log("filtered event:" + (JSON.stringify(filteredEvents)))
+  //Ok.....so now we just need to set and render this...somehow......
+  setEvents(filteredEvents);
+  //Delayed response on this ^ I've read that it's something to do with how useStates work...
+};
+
 
 //Adding a new event
 
@@ -109,7 +123,23 @@ const addEvent = async () => {
     };
   
     
-    if (title || location || description  == ""){
+    if (title == ""){
+    alert("Cannot be blank")
+    setTitle('');
+    setLocation('');
+    setDescription('');
+    Keyboard.dismiss();
+    }
+    
+    else if (description == ""){
+    alert("Cannot be blank")
+    setTitle('');
+    setLocation('');
+    setDescription('');
+    Keyboard.dismiss();
+    }
+
+    else if (description == ""){
     alert("Cannot be blank")
     setTitle('');
     setLocation('');
@@ -168,9 +198,11 @@ const editEvent = () => {
   // Specify the current date
   current={new Date().toDateString()}
   // Callback that gets called when the user selects a day
-  onDayPress={day => {
+  onDayPress= {day =>  {
     console.log('selected day:', day);
     setSelected(day.dateString);
+    console.log('date string:' + selected);
+    getEventForDay(day.dateString);
     showModal();
     //Open modal for date 
   }}
@@ -180,14 +212,52 @@ const editEvent = () => {
   }}
 />
 
-{/* Modal for the entry of the day */}
+
     <View>
+      
+
+        {/* Modal for entries */}
+        <Modal
+            visible = {modal}
+            onRequestClose = {hideModal}
+            animationType= "slide"
+            transparent>
+                <Pressable style = {styles.eventModalUpper} onPress = {hideModal}/>
+                <View style= {styles.eventModalLower}>
+                    <Text>{selected}</Text>
+                    <Text>Just testing something....</Text>
+
+                     {/* Events Viewer Placeholder*/}
+                          <View style = {styles.eventsViewer}>
+                            {/* Figure out a way to only display the events for the date selected*/}
+                            <FlatList 
+                            data = {[...events].reverse()} 
+                            keyExtractor = {(item) => item.id.toString()} 
+                            renderItem={({item}) => (
+                              <EventItem event = {item} deleteEntry={deleteEvent} visible = {adminButtons} />
+                            )}/>
+                            
+
+                            {/*Add button for event*/}
+                            {/* This button is not showing up for some reason, but I don't know why */}
+                            {adminButtons && <Pressable
+                            style={styles.addButton}
+                            onPress={() => {
+                              showCreate()
+                            }}
+                            ></Pressable>}
+                          </View> 
+                        
+                </View>
+            </Modal>
+
+            {/* Modal for entry creation */}
             <Modal
             visible = {eventCreate}
             onRequestClose = {hideCreate}
             animationType= "fade"
             transparent>
-                <Pressable style = {styles.eventModalUpper} onPress = {hideModal}/>
+                <Pressable style = {styles.eventModalUpper} onPress = {hideCreate}/>
                 <KeyboardAvoidingView style= {styles.eventModalLower}>
                     <Text style = {styles.eventName}>Make an event</Text>
 
@@ -210,12 +280,12 @@ const editEvent = () => {
                     ></TextInput>
 
                     {/* Description */}
-                    <Text style = {styles.eventDescription}>Location:</Text>
+                    <Text style = {styles.eventDescription}>Description:</Text>
                     <TextInput 
                     multiline placeholder ="Description" 
                     style = {styles.commentInput}
-                    onChangeText={(location) => setLocation(location)}
-                    value = {location}
+                    onChangeText={(description) => setDescription(description)}
+                    value = {description}
                     maxLength = {500}
                     ></TextInput>
 
@@ -224,7 +294,7 @@ const editEvent = () => {
                     <Text style = {styles.eventDescription}>Time:</Text>
                     <TextInput 
                     style = {styles.nameInput}
-                    onChangeText={(time) => setLocation(time)}
+                    onChangeText={(time) => setTime(time)}
                     value = {time}
                     maxLength = {50}
                     ></TextInput>
@@ -233,7 +303,7 @@ const editEvent = () => {
                     <Text style = {styles.eventDescription}>AM/PM:</Text>
                     <TextInput 
                     style = {styles.nameInput}
-                    onChangeText={(amPm) => setLocation(amPm)}
+                    onChangeText={(amPm) => setAmpm(amPm)}
                     value = {amPm}
                     maxLength = {50}
                     ></TextInput>
@@ -247,37 +317,6 @@ const editEvent = () => {
                 </KeyboardAvoidingView>
             </Modal>
         </View>
-
-        {/* Modal for entries */}
-        <Modal
-            visible = {modal}
-            onRequestClose = {hideModal}
-            animationType= "slide"
-            transparent>
-                <Pressable style = {styles.eventModalUpper} onPress = {hideModal}/>
-                <View style= {styles.eventModalLower}>
-                    <Text>{selected}</Text>
-
-                     {/* Events Viewer Placeholder*/}
-                          <View style = {styles.eventsViewer}>
-                            {/* Got a placeholder for the events per day. This code is subject to change*/}
-                            <FlatList 
-                            data = {[...events].reverse()} 
-                            keyExtractor = {(item) => item.id.toString()} 
-                            renderItem={({item}) => (
-                              <EventItem event = {item} deleteEntry={deleteEvent} visible = {adminButtons} />
-                            )}/>
-                            {adminButtons && <TouchableOpacity
-                            style={styles.addButton}
-                            onPress={() => {
-                              showCreate()
-                            }}
-                            ></TouchableOpacity>}
-                            {/* Put add button here if user is admin */}
-
-                          </View> 
-                </View>
-            </Modal>
     </View>
   )
 }
@@ -310,8 +349,9 @@ const EventItem = ({event, visible, deleteEntry} : {event: EventType, visible:bo
             <Ionicons  name= "pencil-outline" size={30} color={'grey'} /></TouchableOpacity>}
             
             
-            
+           
             <View style = {styles.lineSeparator}></View>
+            
         
           </View>
           )  
@@ -341,13 +381,14 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
   },
+  //The problem lies here....let's keep tabs on it
    eventsViewer: {
-    backgroundColor: 'rgb(255, 255, 255)',
-    borderColor:'rgba(110, 110, 110, 0.51)',
+    backgroundColor: 'rgb(233, 233, 233)',
+    borderColor:'rgba(9, 255, 0, 0.51)',
     borderWidth: 2,
     borderRadius: 30,
-    width: 'auto',
-    height: '90%',
+    width: "100%",
+    height: "90%",
   },
   eventEntry: {
     flexDirection: 'column',
@@ -369,18 +410,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
    lineSeparator: {
-    backgroundColor:'rgba(61, 61, 61, 0.7)',
-    width: '90%',
+    backgroundColor:'rgba(148, 148, 148, 0.7)',
+    width: '20%',
     height: 2,
     marginTop: 50,
     alignSelf: 'center'
 
   },
   addButton: {
-    color:'rgba(0, 38, 255, 0.7)',
-    flexDirection:'column',
+    backgroundColor:'rgba(0, 38, 255, 0.7)',
     borderColor:'rgba(0, 38, 255, 0.7)',
-    borderRadius:100
+    borderRadius:30,
+    height:100,
+    width:100,
   },
   nameInput: {
     flex:0.5,
