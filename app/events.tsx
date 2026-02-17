@@ -67,7 +67,7 @@ const [selected, setSelected] = useState('');
 //Modal that pops up when you select a date
 const[modal, setModal] = useState(false);
 const showModal = () => setModal(true);
-const hideModal = () => setModal(false);
+const hideModal = () => {setModal(false)};
 //States to show add/edit/delete functions for each event
 const[adminButtons, setAdmin] = useState(false);
 const show = () => setAdmin(true);
@@ -83,8 +83,7 @@ useEffect( () => {
     try {
       const events = await AsyncStorage.getItem('my-events');
       if (events !== null){
-        setEvents(JSON.parse(events))
-        console.log("Events:" + events)
+        setEvents(JSON.parse(events));
       }
     } 
     catch (error){
@@ -93,19 +92,6 @@ useEffect( () => {
   } 
   getEvents();
 },[])
-
-
-//Function to return only events for the data selected (This somewhat works, but only once. I wonder what's going on)
-
-const getEventForDay = (selectedDate: string) => {
-  const filteredEvents = events.filter((item) => 
-  item.eventDate.includes(selectedDate)
-  );
-  console.log("filtered event:" + (JSON.stringify(filteredEvents)))
-  //Ok.....so now we just need to set and render this...somehow......
-  setEvents(filteredEvents);
-  //Delayed response on this ^ I've read that it's something to do with how useStates work...
-};
 
 
 //Adding a new event
@@ -184,6 +170,28 @@ const editEvent = () => {
   console.log("Editing event...")
 }
 
+//Function to return only events for the data selected (This somewhat works, but only once. I wonder what's going on)
+
+//test function
+const getEventForDay = (selectedDate: string) => {
+  //Step 1
+  setSelected(selectedDate);
+  console.log("selected date:" + selected)
+  // //Step 2
+  if (events) {
+    const filteredEvents = events.filter ((item) => item.eventDate.includes(selected))
+    console.log("Filtered date:" + (JSON.stringify(filteredEvents)))
+    setEvents(filteredEvents)
+  }
+ 
+};
+
+useEffect(() => {
+  if (selected !== ""){
+    getEventForDay(selected)
+  }
+}, [selected])
+
 
   return (
     <View style = {styles.container}>
@@ -199,10 +207,7 @@ const editEvent = () => {
   current={new Date().toDateString()}
   // Callback that gets called when the user selects a day
   onDayPress= {day =>  {
-    console.log('selected day:', day);
-    setSelected(day.dateString);
-    console.log('date string:' + selected);
-    getEventForDay(day.dateString);
+    getEventForDay(day.dateString)
     showModal();
     //Open modal for date 
   }}
@@ -210,6 +215,7 @@ const editEvent = () => {
   markedDates={{
     [selected]: {selected: true, disableTouchEvent: false, selectedColor: 'red'}
   }}
+  
 />
 
 
