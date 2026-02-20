@@ -50,6 +50,8 @@ useEffect( () => {
 
 //Set event
 const [events, setEvents] = useState<EventType[]>([]);
+//Masterlist
+const [allEvents, setAllEvents] = useState<EventType[]>([]);
 //Set title of event
 const [title, setTitle] = useState<string>('');
 //Set location of event
@@ -81,11 +83,12 @@ const hideCreate = () => setEventCreate(false);
 useEffect( () => {
   const getEvents = async() => {
     try {
-      const events = await AsyncStorage.getItem('my-events');
-      if (events !== null){
-        setEvents(JSON.parse(events));
-        console.log("Events from getEvents:  " + events);
-        console.log("Type:   " + typeof (events));
+      const eventsJson = await AsyncStorage.getItem('my-events');
+      if (eventsJson !== null){
+        const parsed = JSON.parse(eventsJson) as EventType[];
+        setAllEvents(parsed);
+        setEvents(parsed);
+        console.log("Events from getEvents:  " + eventsJson);
       }
     } 
     catch (error){
@@ -99,8 +102,8 @@ useEffect( () => {
 //Adding a new event
 
 const addEvent = async () => {
-
-    try {const newEvent = {
+  try {
+    const newEvent: EventType = {
       id: Math.random(),
       eventDate: selected,
       title: title,
@@ -109,63 +112,49 @@ const addEvent = async () => {
       time: time,
       amPM: amPm
     };
-  
-    
-    if (title == ""){
-    alert("Cannot be blank")
-    setTitle('');
-    setLocation('');
-    setDescription('');
-    Keyboard.dismiss();
-    }
-    
-    else if (description == ""){
-    alert("Cannot be blank")
-    setTitle('');
-    setLocation('');
-    setDescription('');
-    Keyboard.dismiss();
+
+    if (title == "" || description == ""){
+      alert("Cannot be blank");
+      setTitle('');
+      setLocation('');
+      setDescription('');
+      Keyboard.dismiss();
+      return;
     }
 
-    else if (description == ""){
-    alert("Cannot be blank")
+    // Create a new array (do not mutate state)
+    const updated = [...allEvents, newEvent];
+    setAllEvents(updated);
+    setEvents(updated);
+    await AsyncStorage.setItem('my-events', JSON.stringify(updated));
+
     setTitle('');
     setLocation('');
     setDescription('');
-    Keyboard.dismiss();
-    }
-
-    //Maybe put a profanity filter here? I'm not entirely sure yet
-
-    else {
-    events.push(newEvent);
-    setEvents(events);
-    await AsyncStorage.setItem('my-events', JSON.stringify(events));
-    setTitle('');
-    setLocation('');
-    setDescription('');
-    setTime('')
-    setAmpm('')
+    setTime('');
+    setAmpm('');
     alert("Submitted!");
     Keyboard.dismiss();
-  }   
   }
   catch(error) {
-    console.log ("Something happened? I dunno");
+    console.log (error);
   }
 }
 
 //Deleting an event
 const deleteEvent = async (id:number) => {
   try {
-    const newEvent = events.filter((event) => event.id !== id);
-    await AsyncStorage.setItem("my-events", JSON.stringify(newEvent));
-    setEvents(newEvent);
+    // filter from master list
+    const updated = allEvents.filter((event) => event.id !== id);
+    await AsyncStorage.setItem("my-events", JSON.stringify(updated));
+    setAllEvents(updated);
+    setEvents(updated);
   } 
   catch(error) {
     console.log(error);
   }
 }
+
 
 //Editing an event (work in progess!!!)
 const editEvent = () => {
@@ -174,20 +163,12 @@ const editEvent = () => {
 
 //Function to return only events for the data selected (This somewhat works, but only once. I wonder what's going on)
 
-//test function
-//Undo this after
 const getEventForDay = (selectedDate: string) => {
-  //Step 1
+  // set selected for calendar marking/modal
   setSelected(selectedDate);
-  console.log("selected date:" + selected)
-  // //Step 2
-  if (events) {
-    const filteredEvents = events.filter ((item) => item.eventDate.includes(selected))
-    //Possible fix: Push filteredEvents to new list, delete and push next thing, so on..
-    console.log("Filtered date:" + (JSON.stringify(filteredEvents)))
-    setEvents(filteredEvents)
-  }
- 
+  // filter from the master list using the passed-in date (do NOT rely on 'selected' state immediately)
+  const filteredEvents = allEvents.filter((item) => item.eventDate === selectedDate);
+  setEvents(filteredEvents);
 };
 
   return (
