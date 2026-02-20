@@ -186,6 +186,7 @@ const getEventForDay = (selectedDate: string) => {
  
 };
 
+//I was told this would work
 useEffect(() => {
   if (selected !== ""){
     getEventForDay(selected)
