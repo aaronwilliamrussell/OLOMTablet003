@@ -27,14 +27,14 @@ useEffect( () => {
     try {
       const login = await AsyncStorage.getItem('adminpriv');
       if (login !== null) {
-        console.log(JSON.parse(login))
+        // console.log(JSON.parse(login))
       }
       if (login == "true"){
-        console.log("Welcome to the event page, admin")
+        // console.log("Welcome to the event page, admin")
         show();
       }
       else if (login == "false"){
-        console.log("Visitor detected")
+        // console.log("Visitor detected")
         hide();
       }
     }
@@ -84,6 +84,8 @@ useEffect( () => {
       const events = await AsyncStorage.getItem('my-events');
       if (events !== null){
         setEvents(JSON.parse(events));
+        console.log("Events from getEvents:  " + events);
+        console.log("Type:   " + typeof (events));
       }
     } 
     catch (error){
@@ -173,6 +175,7 @@ const editEvent = () => {
 //Function to return only events for the data selected (This somewhat works, but only once. I wonder what's going on)
 
 //test function
+//Undo this after
 const getEventForDay = (selectedDate: string) => {
   //Step 1
   setSelected(selectedDate);
@@ -180,19 +183,12 @@ const getEventForDay = (selectedDate: string) => {
   // //Step 2
   if (events) {
     const filteredEvents = events.filter ((item) => item.eventDate.includes(selected))
+    //Possible fix: Push filteredEvents to new list, delete and push next thing, so on..
     console.log("Filtered date:" + (JSON.stringify(filteredEvents)))
     setEvents(filteredEvents)
   }
  
 };
-
-//I was told this would work
-useEffect(() => {
-  if (selected !== ""){
-    getEventForDay(selected)
-  }
-}, [selected])
-
 
   return (
     <View style = {styles.container}>
@@ -241,7 +237,7 @@ useEffect(() => {
                             data = {[...events].reverse()} 
                             keyExtractor = {(item) => item.id.toString()} 
                             renderItem={({item}) => (
-                              <EventItem event = {item} deleteEntry={deleteEvent} visible = {adminButtons} />
+                              <EventItem ev = {item} deleteEntry={deleteEvent} visible = {adminButtons} />
                             )}/>
                             
 
@@ -329,20 +325,20 @@ useEffect(() => {
 }
 
 //Here's a component for an entry. Make sure it *returns* the view. Looooots of stuff to change here
-const EventItem = ({event, visible, deleteEntry} : {event: EventType, visible:boolean, deleteEntry: (id: number) => void}) => {
+const EventItem = ({ev, visible, deleteEntry} : {ev: EventType, visible:boolean, deleteEntry: (id: number) => void}) => {
   return (
   <View style = {styles.eventEntry}>
             
-            <Text style = {styles.eventName}>{event.eventDate} </Text>
-            <Text style = {styles.eventName}>{"\n"}{event.title}</Text>
-            <Text style = {styles.eventDescription}>{"\n"}{event.description} </Text>
+            <Text style = {styles.eventName}>{ev.eventDate} </Text>
+            <Text style = {styles.eventName}>{"\n"}{ev.title}</Text>
+            <Text style = {styles.eventDescription}>{"\n"}{ev.description} </Text>
 
             {/* Admin buttons */}
             {/* Delete button */}
             {visible && <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => {
-              deleteEntry(event.id);
+              deleteEntry(ev.id);
               alert("Deleted entry!");
             }}>
             <Ionicons  name= "trash" size={30} color={'grey'} /></TouchableOpacity>}
