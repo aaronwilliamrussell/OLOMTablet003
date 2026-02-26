@@ -1,8 +1,8 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
-import { Image, Keyboard, KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { FlatList, Image, Keyboard, KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 
 type PhotoType = {
@@ -184,6 +184,7 @@ const deletePhoto = async () => {
       {/* Photo Gallery */}
       <View style = {styles.gallery}>
         <FlatList
+        //Styling will not work here for some reason??? My thumbnails do show, but they are all vertical, which I don't want
         data = {[...photos].reverse()} 
         keyExtractor = {(item) => item.id.toString()} 
         renderItem={({item}) => (
@@ -292,7 +293,6 @@ const styles = StyleSheet.create({
         flex:1,
         justifyContent:"center",
         alignItems:"center",
-        padding: 2
     },
 
     gallery: {
@@ -301,6 +301,7 @@ const styles = StyleSheet.create({
       alignItems:"center",
       flexDirection: 'row',
       flexWrap: "wrap",
+      margin: 20
     },
 
     galleryThumbnailContainer: {
