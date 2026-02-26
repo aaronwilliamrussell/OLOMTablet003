@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
-import { Image, Keyboard, KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Keyboard, KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 
 type PhotoType = {
@@ -77,7 +78,9 @@ const hide = () => setAdmin(false);
 
 //Modal that pops up when you select a photo
 const[modal, setModal] = useState(false);
-const showModal = () => setModal(true);
+const showModal = () => {setModal(true)
+  //IMPORTANT!!! - this function also needs to get and return the id of the selected image so that the carousel can start on that image
+};
 const hideModal = () => {setModal(false)};
 
 //States to show photo creation modal
@@ -139,6 +142,17 @@ const addPhoto = async () => {
   }
 }
 
+//Deleting a photo (if admin)
+
+const deletePhoto = async () => {
+  try{
+    //Just fill this out after 
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
 //Now, I'm assuming that I'll need a function to get the filename from the FilePicker, but how???
 //This looks to be it, but I'm not entirely sure yet
 
@@ -156,10 +170,8 @@ const addPhoto = async () => {
       alert('You did not select any image.');
     }}
 
-/** Modals go here!! (although, some views may have to be made into functions like the previous pages) */
+/** Views go here!! (although, some views may have to be made into functions like the previous pages) */
   return (
-   //Trying something different. This is a placeholder
-
     <View style={styles.container}>
       {/* Button appears if admin is logged in */}
       {adminButtons && <Pressable
@@ -168,23 +180,28 @@ const addPhoto = async () => {
       showCreate()
       }}
       ><Text>Add photo</Text></Pressable>}
-      
-      <Text>Photo gallery in progress!!</Text>
 
-      {/* Photo Gallery 
-      _____________________
-      So, now that I know that the files are being stored in the system, I can try to implement the gallery.
-      Probably best to do that tomorrow. Would a FlatList of images work best? Is that even possible?*/}
-      <View>
-
+      {/* Photo Gallery */}
+      <View style = {styles.gallery}>
+        <FlatList
+        data = {[...photos].reverse()} 
+        keyExtractor = {(item) => item.id.toString()} 
+        renderItem={({item}) => (
+          <PhotoThumbnail entry = {item} deleteEntry={deletePhoto} visible = {adminButtons} showModal={showModal} />
+        )}
+        ></FlatList>
       </View>
       
 
 
-     {/* Modal for photo viewing  */}
+     {/* Modal for photo viewing  
+     
+     WORK IN PROGRESS!!!
+     
+     */}
       <Modal 
        visible = {modal}
-                  onRequestClose = {hideCreate}
+                  onRequestClose = {hideModal}
                   animationType= "fade"
                   transparent>
 
@@ -213,7 +230,7 @@ const addPhoto = async () => {
                           ></Image>
 
                            {/* Photo from Gallery Button */}
-                          <Pressable style = {styles.galleryButton} onPress={() => pickImageAsync()}> 
+                          <Pressable style = {styles.photoLibrary} onPress={() => pickImageAsync()}> 
                             <Text style = {styles.buttonText}>Select a Photo</Text>
                           </Pressable> 
       
@@ -240,11 +257,67 @@ const addPhoto = async () => {
 
 export default photos
 
+//The function that returns each thumbail per photo uploaded
+const PhotoThumbnail = ({entry, visible, showModal, deleteEntry} : {entry: PhotoType, visible:boolean, deleteEntry: (id: number) => void, showModal: () => void}) => {
+  return (
+  <TouchableOpacity 
+  style = {styles.galleryThumbnailContainer}
+   onPress={() => {
+              showModal();
+              alert("Modal open");
+            }}
+            >
+            <Image
+            style= {styles.thumbnailImage}
+            //I can't access the URI from 'entry.imageData' it seems. Maybe there is a way to do it? I'm keeping a note of this for now..
+            source={{uri: entry.imageData}}
+            ></Image>
+
+            {/* Delete button only viewable in admin mode! */}
+            {visible && <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => {
+              deleteEntry(entry.id);
+              alert("Deleted photo!");
+            }}>
+            <Ionicons  name= "trash" size={10} color={'grey'} /></TouchableOpacity>}
+        
+          </TouchableOpacity>
+          ) 
+
+}
+
 const styles = StyleSheet.create({
     container:{
         flex:1,
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        padding: 2
+    },
+
+    gallery: {
+      flex:1,
+      justifyContent:"center",
+      alignItems:"center",
+      flexDirection: 'row',
+      flexWrap: "wrap",
+    },
+
+    galleryThumbnailContainer: {
+      width: 100, 
+      height: 100,
+      backgroundColor: 'rgba(34, 137, 255, 0.7)'
+    },
+
+    thumbnailImage: {
+      width: 50, 
+      height: 50,
+      backgroundColor: 'rgba(255, 34, 34, 0.7)'
+    },
+
+    deleteButton: {
+      width: 10, 
+      height: 10,
     },
 
     addPhoto: {
@@ -307,7 +380,7 @@ const styles = StyleSheet.create({
     margin: 'auto'
   },
 
-  galleryButton:{
+  photoLibrary:{
     flex:1,
     height:'auto',
     width:'50%',
