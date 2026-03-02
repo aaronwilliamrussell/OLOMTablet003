@@ -56,9 +56,7 @@ const hide = () => setAdmin(false);
 
 //Modal that pops up when you select a photo
 const[modal, setModal] = useState(false);
-const showModal = () => {setModal(true)
-  //IMPORTANT!!! - this function also needs to get and return the id of the selected image so that the carousel can start on that image
-};
+const showModal = () => {setModal(true)};
 const hideModal = () => {setModal(false)};
 
 //States to show photo creation modal
@@ -183,30 +181,42 @@ const deletePhoto = async () => {
                   onRequestClose = {hideModal}
                   animationType= "fade"
                   transparent>
+       
       <View style={styles.pageContain}>
-      <PagerView style={styles.pageContain} initialPage={0}>
-        <TouchableOpacity style = {styles.backButtonContain} onPress={hideModal}>
         <Ionicons  name= "chevron-back-circle-outline" size={50} color={'white'} />
+        <TouchableOpacity style = {styles.backButtonContain} onPress={hideModal}>
         </TouchableOpacity>
+      <PagerView style={styles.pageContain} initialPage={0}>
+        
+        {/* _______________________________________________________________________________________________________________
+            SAMPLE DATA
         <View style={styles.page} key="1">
           <Image
-          source={{uri: 'https://en.wikipedia.org/wiki/Image#/media/File:Image_created_with_a_mobile_phone.png'}}
+          source={{uri: 'https://historicplacesdays.ca/wp-content/uploads/2019/07/4C039F93-975D-485C-A26E-A14F56A79E1C.png'}}
           style= {styles.modalImage}
           ></Image>
           <Text>Swipe ➡️</Text>
         </View>
         <View style={styles.page} key="2">
           <Image
-          source={{uri: 'https://en.wikipedia.org/wiki/Image#/media/File:TEIDE.JPG'}}
+          source={{uri: 'https://t4.ftcdn.net/jpg/00/98/31/69/360_F_98316912_2Mmdy5mluCDJSNUmU5vx5KLsMZX5s8Wl.jpg'}}
           style= {styles.modalImage}
           ></Image>
         </View>
         <View style={styles.page} key="3">
           <Image
-          source={{uri: 'https://en.wikipedia.org/wiki/Main_Page#/media/File:NGC_4414_(NASA-med).jpg'}}
+          source={{uri: 'https://media.sketchfab.com/models/a1e63357f3fa4a8d9a310db3ae35c2fb/thumbnails/91123f9d8d614f8b99011ac454045e76/0b8997d7bede43a785f7d8b060fcdbce.jpeg'}}
           style= {styles.modalImage}
           ></Image>
-        </View>
+        </View> 
+        ________________________________________________________________________________________________________________________*/}
+
+        {photos.map (key => 
+          
+            <ModalPhoto entry = {key}/>
+          
+        )}
+
       </PagerView>
     </View>
       </Modal>
@@ -275,14 +285,26 @@ const PhotoThumbnail = ({entry, visible, showModal, deleteEntry} : {entry: Photo
             {visible && <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => {
-              deleteEntry(entry.id);
-              alert("Deleted photo!");
+              // deleteEntry(entry.id);
+              console.log("Deleted: " + entry.id);
             }}>
             <Ionicons  name= "trash" size={10} color={'grey'} /></TouchableOpacity>}
         
           </TouchableOpacity>
           ) 
 
+}
+
+//Function that returns a modal where each image is derived from the PhotosList
+const ModalPhoto = ({entry} : {entry: PhotoType}) =>{
+  return (
+    <View style={styles.page} key={entry.id}>
+          <Image
+          source={{uri: entry.imageData}}
+          style= {styles.modalImage}
+          ></Image>
+        </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -432,8 +454,10 @@ const styles = StyleSheet.create({
   },
 
   modalImage: {
+    resizeMode: 'contain',
     height: 100,
     width: 200,
+    backgroundColor:'#ff9900',
   }
 
 })
