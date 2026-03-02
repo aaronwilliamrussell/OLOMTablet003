@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import { Image, Keyboard, KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-
+import PagerView from 'react-native-pager-view';
 
 type PhotoType = {
   id: number;
@@ -171,21 +171,44 @@ const deletePhoto = async () => {
       
 
 
-     {/* Modal for photo carousel
+     {/* 
+     A swiping image gallery for each photo. Contains text as well! 
      
-     WORK IN PROGRESS!!!
-     
+     May have to be a separate function like the photo thumbnails
      */}
+     
+     {/* This is a test */}
       <Modal 
        visible = {modal}
                   onRequestClose = {hideModal}
                   animationType= "fade"
                   transparent>
-
-                    {/* Image goes here */}
-                    {/* Left and right arrows go here */}
-                    {/* Exit button goes here. This is where hideModal() comes in */}
-
+      <View style={styles.pageContain}>
+      <PagerView style={styles.pageContain} initialPage={0}>
+        <TouchableOpacity style = {styles.backButtonContain} onPress={hideModal}>
+        <Ionicons  name= "chevron-back-circle-outline" size={50} color={'white'} />
+        </TouchableOpacity>
+        <View style={styles.page} key="1">
+          <Image
+          source={{uri: 'https://en.wikipedia.org/wiki/Image#/media/File:Image_created_with_a_mobile_phone.png'}}
+          style= {styles.modalImage}
+          ></Image>
+          <Text>Swipe ➡️</Text>
+        </View>
+        <View style={styles.page} key="2">
+          <Image
+          source={{uri: 'https://en.wikipedia.org/wiki/Image#/media/File:TEIDE.JPG'}}
+          style= {styles.modalImage}
+          ></Image>
+        </View>
+        <View style={styles.page} key="3">
+          <Image
+          source={{uri: 'https://en.wikipedia.org/wiki/Main_Page#/media/File:NGC_4414_(NASA-med).jpg'}}
+          style= {styles.modalImage}
+          ></Image>
+        </View>
+      </PagerView>
+    </View>
       </Modal>
 
       {/* Modal for photo entry creation */}
@@ -241,7 +264,6 @@ const PhotoThumbnail = ({entry, visible, showModal, deleteEntry} : {entry: Photo
   style = {styles.galleryThumbnailContainer}
    onPress={() => {
               showModal();
-              alert("Modal open");
             }}
             >
             <Image
@@ -387,5 +409,31 @@ const styles = StyleSheet.create({
     height: 50,
     width:50,
     
+  },
+
+  //Testing styles for page viewer
+   pageContain: {
+    flex: 1,
+    backgroundColor:'#535353',
+  },
+  page: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  backButtonContain: {
+     position: 'absolute',
+           left: 0,
+           right: 0,
+           top: 0,
+           bottom: 0,
+      width: 50,
+      height:50,
+  },
+
+  modalImage: {
+    height: 100,
+    width: 200,
   }
+
 })
