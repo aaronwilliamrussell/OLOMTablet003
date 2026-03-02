@@ -48,6 +48,8 @@ const [photos, setPhotos] = useState<PhotoType[]>([]);
 const [imageData, setimageData] = useState<string | undefined>(undefined);
 //Set Description of photo
 const [description, setDescription] = useState<string>('');
+//Set ID of photo
+const [thumbnailID, setID] = useState<number>(0);
 
 //States to show add/edit/delete functions for photos
 const[adminButtons, setAdmin] = useState(false);
@@ -129,6 +131,14 @@ const deletePhoto = async () => {
   }
 }
 
+//Getting the id of the thumbnail selected
+//CHANGE THIS TO LOOK FOR PLACE IN THE ARRAY WHERE THE SELECTED PHOTO IS. Numbers aren't working. May need strings
+const getID = async (id:number) => {
+    const filteredID = Number(photos.filter((entry) => entry.id !== id));
+    setID(filteredID);
+    console.log("Id is: " + thumbnailID)
+}
+
 //Now, I'm assuming that I'll need a function to get the filename from the FilePicker, but how???
 //This looks to be it, but I'm not entirely sure yet
 
@@ -161,7 +171,7 @@ const deletePhoto = async () => {
       <ScrollView style = {styles.gallery}>
         {photos.map (key => 
           
-            <PhotoThumbnail entry = {key} deleteEntry={deletePhoto} visible = {adminButtons} showModal={showModal} />
+            <PhotoThumbnail entry = {key} deleteEntry={deletePhoto} visible = {adminButtons} showModal={showModal} getID={getID} />
           
         )}
 
@@ -268,11 +278,12 @@ const deletePhoto = async () => {
 export default photos
 
 //The function that returns each thumbail per photo uploaded
-const PhotoThumbnail = ({entry, visible, showModal, deleteEntry} : {entry: PhotoType, visible:boolean, deleteEntry: (id: number) => void, showModal: () => void}) => {
+const PhotoThumbnail = ({entry, visible, showModal, deleteEntry, getID} : {entry: PhotoType, visible:boolean, deleteEntry: (id: number) => void, showModal: () => void, getID: (id:number) => void}) => {
   return (
   <TouchableOpacity 
   style = {styles.galleryThumbnailContainer}
    onPress={() => {
+              getID(entry.id);
               showModal();
             }}
             >
