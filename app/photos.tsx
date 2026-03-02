@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
-import { FlatList, Image, Keyboard, KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, Keyboard, KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 
 type PhotoType = {
@@ -182,20 +182,27 @@ const deletePhoto = async () => {
       ><Text>Add photo</Text></Pressable>}
 
       {/* Photo Gallery */}
-      <View style = {styles.gallery}>
+      <ScrollView style = {styles.gallery}>
+        {/* Not doing this anymore, but will comment out
         <FlatList
-        //Styling will not work here for some reason??? My thumbnails do show, but they are all vertical, which I don't want
+        horizontal
         data = {[...photos].reverse()} 
         keyExtractor = {(item) => item.id.toString()} 
         renderItem={({item}) => (
           <PhotoThumbnail entry = {item} deleteEntry={deletePhoto} visible = {adminButtons} showModal={showModal} />
         )}
-        ></FlatList>
-      </View>
+        ></FlatList> */}
+        {photos.map (key => 
+          
+            <PhotoThumbnail entry = {key} deleteEntry={deletePhoto} visible = {adminButtons} showModal={showModal} />
+          
+        )}
+
+      </ScrollView>
       
 
 
-     {/* Modal for photo viewing  
+     {/* Modal for photo carousel
      
      WORK IN PROGRESS!!!
      
@@ -270,7 +277,6 @@ const PhotoThumbnail = ({entry, visible, showModal, deleteEntry} : {entry: Photo
             >
             <Image
             style= {styles.thumbnailImage}
-            //I can't access the URI from 'entry.imageData' it seems. Maybe there is a way to do it? I'm keeping a note of this for now..
             source={{uri: entry.imageData}}
             ></Image>
 
@@ -297,8 +303,10 @@ const styles = StyleSheet.create({
 
     gallery: {
       flex:1,
-      justifyContent:"center",
-      alignItems:"center",
+      // justifyContent:"center",
+      // alignItems:"center",
+      width: "100%",
+      height: 'auto',
       flexDirection: 'row',
       flexWrap: "wrap",
       margin: 20
