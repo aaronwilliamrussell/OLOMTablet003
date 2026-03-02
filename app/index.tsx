@@ -1,22 +1,26 @@
-import React, { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { useState } from 'react';
 import {
-	Button,
-	Image,
-	View,
-	StyleSheet,
-	ActivityIndicator,
-    Pressable,
-	Text,
-	FlatList,
+    Image,
     ImageBackground,
     Modal,
+    Pressable,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home () {
+
+async function changeScreenOrientation() {
+await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+}
+
+changeScreenOrientation();
 
     //Functions for showing and hiding elements
     const[visible, setVisible] = useState(false);
