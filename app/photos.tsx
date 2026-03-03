@@ -13,7 +13,6 @@ type PhotoType = {
 };
 
 const photos = () => {
-    console.log("This is the photos page!")
 
 //Log in authentication
 useEffect( () => {
@@ -42,14 +41,14 @@ useEffect( () => {
 
 //States for PhotoType objects
 
-//Set new photo (maybe include a masterlist if this doesn't work the way I hope it does?
+//Set new photo 
 const [photos, setPhotos] = useState<PhotoType[]>([]);
 //Set ImageData (get from photo picked from gallery)
 const [imageData, setimageData] = useState<string | undefined>(undefined);
 //Set Description of photo
 const [description, setDescription] = useState<string>('');
-//Set ID of photo
-const [thumbnailID, setID] = useState<number>(0);
+//Set photo index
+const [photoIndex, setIndex] = useState<number>();
 
 //States to show add/edit/delete functions for photos
 const[adminButtons, setAdmin] = useState(false);
@@ -74,7 +73,6 @@ useEffect( () => {
       if (photosJson !== null){
         const parsed = JSON.parse(photosJson) as PhotoType[];
         setPhotos(parsed);
-        console.log("Photo List:  " + photosJson);
       }
     } 
     catch (error){
@@ -122,25 +120,26 @@ const addPhoto = async () => {
 
 //Deleting a photo (if admin)
 
-const deletePhoto = async () => {
-  try{
-    //Just fill this out after 
-  }
-  catch (error) {
-    console.log(error)
+const deletePhoto = async (id:number) => {
+  try {
+    const newPhoto = photos.filter((entry) => entry.id !== id);
+    await AsyncStorage.setItem("my-photos", JSON.stringify(newPhoto));
+    setPhotos(newPhoto);
+  } 
+  catch(error) {
+    console.log(error);
   }
 }
 
-//Getting the id of the thumbnail selected
-//CHANGE THIS TO LOOK FOR PLACE IN THE ARRAY WHERE THE SELECTED PHOTO IS. Numbers aren't working. May need strings
-const getID = async (id:number) => {
-    const filteredID = Number(photos.filter((entry) => entry.id !== id));
-    setID(filteredID);
-    console.log("Id is: " + thumbnailID)
+//Getting the index of the thumbnail selected so that the modal opens on the corresponding folder
+const getFilteredPhoto = async (id:number) => {
+    const indexofPhot = photos.findIndex((entry) => entry.id === id)
+    //Set index
+    setIndex(indexofPhot)
 }
 
-//Now, I'm assuming that I'll need a function to get the filename from the FilePicker, but how???
-//This looks to be it, but I'm not entirely sure yet
+
+//Pick image from gallery
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -171,7 +170,7 @@ const getID = async (id:number) => {
       <ScrollView style = {styles.gallery}>
         {photos.map (key => 
           
-            <PhotoThumbnail entry = {key} deleteEntry={deletePhoto} visible = {adminButtons} showModal={showModal} getID={getID} />
+            <PhotoThumbnail entry = {key} deleteEntry={deletePhoto} visible = {adminButtons} showModal={showModal} getFilteredPhoto={getFilteredPhoto} />
           
         )}
 
@@ -196,35 +195,11 @@ const getID = async (id:number) => {
         <Ionicons  name= "chevron-back-circle-outline" size={50} color={'white'} />
         <TouchableOpacity style = {styles.backButtonContain} onPress={hideModal}>
         </TouchableOpacity>
-      <PagerView style={styles.pageContain} initialPage={0}>
-        
-        {/* _______________________________________________________________________________________________________________
-            SAMPLE DATA
-        <View style={styles.page} key="1">
-          <Image
-          source={{uri: 'https://historicplacesdays.ca/wp-content/uploads/2019/07/4C039F93-975D-485C-A26E-A14F56A79E1C.png'}}
-          style= {styles.modalImage}
-          ></Image>
-          <Text>Swipe ➡️</Text>
-        </View>
-        <View style={styles.page} key="2">
-          <Image
-          source={{uri: 'https://t4.ftcdn.net/jpg/00/98/31/69/360_F_98316912_2Mmdy5mluCDJSNUmU5vx5KLsMZX5s8Wl.jpg'}}
-          style= {styles.modalImage}
-          ></Image>
-        </View>
-        <View style={styles.page} key="3">
-          <Image
-          source={{uri: 'https://media.sketchfab.com/models/a1e63357f3fa4a8d9a310db3ae35c2fb/thumbnails/91123f9d8d614f8b99011ac454045e76/0b8997d7bede43a785f7d8b060fcdbce.jpeg'}}
-          style= {styles.modalImage}
-          ></Image>
-        </View> 
-        ________________________________________________________________________________________________________________________*/}
+      <PagerView style={styles.pageContain} initialPage={photoIndex}>
 
         {photos.map (key => 
           
             <ModalPhoto entry = {key}/>
-          
         )}
 
       </PagerView>
@@ -278,12 +253,12 @@ const getID = async (id:number) => {
 export default photos
 
 //The function that returns each thumbail per photo uploaded
-const PhotoThumbnail = ({entry, visible, showModal, deleteEntry, getID} : {entry: PhotoType, visible:boolean, deleteEntry: (id: number) => void, showModal: () => void, getID: (id:number) => void}) => {
+const PhotoThumbnail = ({entry, visible, showModal, deleteEntry, getFilteredPhoto} : {entry: PhotoType, visible:boolean, deleteEntry: (id: number) => void, showModal: () => void, getFilteredPhoto: (id:number) => void}) => {
   return (
   <TouchableOpacity 
   style = {styles.galleryThumbnailContainer}
    onPress={() => {
-              getID(entry.id);
+              getFilteredPhoto(entry.id);
               showModal();
             }}
             >
@@ -296,7 +271,7 @@ const PhotoThumbnail = ({entry, visible, showModal, deleteEntry, getID} : {entry
             {visible && <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => {
-              // deleteEntry(entry.id);
+              deleteEntry(entry.id);
               console.log("Deleted: " + entry.id);
             }}>
             <Ionicons  name= "trash" size={10} color={'grey'} /></TouchableOpacity>}
@@ -314,6 +289,7 @@ const ModalPhoto = ({entry} : {entry: PhotoType}) =>{
           source={{uri: entry.imageData}}
           style= {styles.modalImage}
           ></Image>
+          <Text>{entry.description}</Text>
         </View>
   )
 }
@@ -331,7 +307,7 @@ const styles = StyleSheet.create({
       // alignItems:"center",
       width: "100%",
       height: 'auto',
-      flexDirection: 'row',
+      flexDirection: 'row-reverse',
       flexWrap: "wrap",
       margin: 20
     },
@@ -343,14 +319,16 @@ const styles = StyleSheet.create({
     },
 
     thumbnailImage: {
-      width: 50, 
-      height: 50,
+      width: '100%', 
+      height: '100%',
       backgroundColor: 'rgba(255, 34, 34, 0.7)'
     },
 
     deleteButton: {
       width: 10, 
       height: 10,
+    //make absolute
+    
     },
 
     addPhoto: {
@@ -466,9 +444,17 @@ const styles = StyleSheet.create({
 
   modalImage: {
     resizeMode: 'contain',
-    height: 100,
-    width: 200,
+    height: '100%',
+    width: '100%',
     backgroundColor:'#ff9900',
+  },
+
+  modalText: {
+    color:'rgb(255, 255, 255)',
+    fontFamily: "arial",
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
   }
 
 })

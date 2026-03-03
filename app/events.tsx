@@ -161,7 +161,7 @@ const editEvent = () => {
   console.log("Editing event...")
 }
 
-//Function to return only events for the data selected (This somewhat works, but only once. I wonder what's going on)
+//Function to return only events for the data selected
 
 const getEventForDay = (selectedDate: string) => {
   // set selected for calendar marking/modal
