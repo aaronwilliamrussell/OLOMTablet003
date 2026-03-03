@@ -109,6 +109,7 @@ const addPhoto = async () => {
     photos.push(newPhoto);
     setPhotos(photos);
     await AsyncStorage.setItem('my-photos', JSON.stringify(photos));
+    //Starting to wonder if storing in AsyncStorage is the best idea. My photos dissappear after a while.....
     setDescription('');
     alert("Submitted!");
     Keyboard.dismiss();
@@ -167,7 +168,7 @@ const getFilteredPhoto = async (id:number) => {
       ><Text>Add photo</Text></Pressable>}
 
       {/* Photo Gallery */}
-      <ScrollView style = {styles.gallery}>
+      <ScrollView contentContainerStyle = {styles.gallery}>
         {photos.map (key => 
           
             <PhotoThumbnail entry = {key} deleteEntry={deletePhoto} visible = {adminButtons} showModal={showModal} getFilteredPhoto={getFilteredPhoto} />
@@ -297,25 +298,25 @@ const ModalPhoto = ({entry} : {entry: PhotoType}) =>{
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        justifyContent:"center",
-        alignItems:"center",
+        justifyContent:"flex-start",
     },
 
     gallery: {
       flex:1,
-      // justifyContent:"center",
-      // alignItems:"center",
+      justifyContent:"flex-start",
       width: "100%",
       height: 'auto',
-      flexDirection: 'row-reverse',
+      flexDirection: 'row',
       flexWrap: "wrap",
-      margin: 20
+      margin: 30
     },
 
+   
     galleryThumbnailContainer: {
       width: 100, 
       height: 100,
-      backgroundColor: 'rgba(34, 137, 255, 0.7)'
+      backgroundColor: 'rgba(34, 137, 255, 0.7)',
+      margin: 10
     },
 
     thumbnailImage: {
