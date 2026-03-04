@@ -152,6 +152,11 @@ const getFilteredPhoto = async (id:number) => {
     if (!result.canceled) {
       console.log(result);
       setimageData(result.assets[0].uri)
+      /**this JUST sets the URI. We need to change this so that the photo gets stored in local storage (file system??)
+       * and then the URL to that file location is set as the imagedata. Easy? It certainly sounds easy, but idk if it'll work.
+       * We'll find out 
+       **/
+      
     } else {
       alert('You did not select any image.');
     }}
@@ -177,15 +182,7 @@ const getFilteredPhoto = async (id:number) => {
 
       </ScrollView>
       
-
-
-     {/* 
-     A swiping image gallery for each photo. Contains text as well! 
-     
-     May have to be a separate function like the photo thumbnails
-     */}
-     
-     {/* This is a test */}
+     {/* Modal that pops up when an image thumbnail is clicked. Users can swipe through to see different photos */}
       <Modal 
        visible = {modal}
                   onRequestClose = {hideModal}
@@ -261,6 +258,7 @@ const PhotoThumbnail = ({entry, visible, showModal, deleteEntry, getFilteredPhot
    onPress={() => {
               getFilteredPhoto(entry.id);
               showModal();
+              console.log("URI: " + entry.imageData)
             }}
             >
             <Image
@@ -302,7 +300,7 @@ const styles = StyleSheet.create({
     },
 
     gallery: {
-      flex:1,
+      flexGrow:1,
       justifyContent:"flex-start",
       width: "100%",
       height: 'auto',
