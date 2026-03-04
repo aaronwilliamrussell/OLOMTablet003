@@ -7,9 +7,9 @@ import PagerView from 'react-native-pager-view';
 
 type PhotoType = {
   id: number;
-  imageData: string | undefined;
+  imageData: string | null | undefined; // this will be base64
   description:string;
-  
+  imageLocation: string | null | undefined
 };
 
 const photos = () => {
@@ -44,11 +44,14 @@ useEffect( () => {
 //Set new photo 
 const [photos, setPhotos] = useState<PhotoType[]>([]);
 //Set ImageData (get from photo picked from gallery)
-const [imageData, setimageData] = useState<string | undefined>(undefined);
+const [imageData, setimageData] = useState<string | null |undefined>(undefined);
 //Set Description of photo
 const [description, setDescription] = useState<string>('');
 //Set photo index
 const [photoIndex, setIndex] = useState<number>();
+//Set photo source (WIP)
+const [imageLocation, setImageLocation] = useState<string | null |undefined>(undefined);
+
 
 //States to show add/edit/delete functions for photos
 const[adminButtons, setAdmin] = useState(false);
@@ -86,10 +89,14 @@ useEffect( () => {
 
 const addPhoto = async () => {
   try {
+//save base64 of photo to local storage and get location of photo. property = imageSource
+    saveImage()
+
     const newPhoto: PhotoType = {
       id: Math.random(),
       imageData: imageData,
-      description: description
+      description: description,
+      imageLocation: imageLocation
     };
 
     if (description == ""){
@@ -147,11 +154,12 @@ const getFilteredPhoto = async (id:number) => {
       mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
+      base64: true
     });
 
     if (!result.canceled) {
       console.log(result);
-      setimageData(result.assets[0].uri)
+      setimageData(result.assets[0].base64)
       /**this JUST sets the URI. We need to change this so that the photo gets stored in local storage (file system??)
        * and then the URL to that file location is set as the imagedata. Easy? It certainly sounds easy, but idk if it'll work.
        * We'll find out 
@@ -160,6 +168,14 @@ const getFilteredPhoto = async (id:number) => {
     } else {
       alert('You did not select any image.');
     }}
+
+//Save picked image to local storage (somehow)
+
+    const saveImage = () => {
+      //get the current imageData
+      //save it to local storage
+      //get location + set location in  imageLocation state
+    }
 
 /** Views go here!! (although, some views may have to be made into functions like the previous pages) */
   return (
@@ -219,7 +235,7 @@ const getFilteredPhoto = async (id:number) => {
                            Will have a delete button just in case the user selects the wrong photo */}
                           <Image 
                           style = {styles.previewImage}
-                          source={{uri: imageData}}
+                          source={{uri: imageLocation}}
                           ></Image>
 
                            {/* Photo from Gallery Button */}
@@ -263,7 +279,7 @@ const PhotoThumbnail = ({entry, visible, showModal, deleteEntry, getFilteredPhot
             >
             <Image
             style= {styles.thumbnailImage}
-            source={{uri: entry.imageData}}
+            source={{uri: entry.imageLocation}}
             ></Image>
 
             {/* Delete button only viewable in admin mode! */}
@@ -285,7 +301,7 @@ const ModalPhoto = ({entry} : {entry: PhotoType}) =>{
   return (
     <View style={styles.page} key={entry.id}>
           <Image
-          source={{uri: entry.imageData}}
+          source={{uri: entry.imageLocation}}
           style= {styles.modalImage}
           ></Image>
           <Text>{entry.description}</Text>
