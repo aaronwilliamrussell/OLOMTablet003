@@ -173,6 +173,7 @@ const getFilteredPhoto = async (id:number) => {
 
     const saveImage = () => {
       //get the current imageData
+      const imageBlob = imageData;
       //save it to local storage
       //get location + set location in  imageLocation state
     }
