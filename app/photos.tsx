@@ -50,7 +50,7 @@ const [imageData, setimageData] = useState<string>('');
 const [description, setDescription] = useState<string>('');
 //Set photo index
 const [photoIndex, setIndex] = useState<number>();
-//Set photo source (WIP)
+//Set photo source 
 const [imageLocation, setImageLocation] = useState<string>('');
 
 
@@ -71,7 +71,7 @@ const hideCreate = () => setPhotoCreate(false);
 
 const imgDir = FileSystem.documentDirectory + 'images/';
 
-async function ensureDirExists() {
+const ensureDirExists = async() => {
   const dirInfo = await FileSystem.getInfoAsync(imgDir);
   if (!dirInfo.exists) {
     console.log("Directory doesn't exist, creating…");
