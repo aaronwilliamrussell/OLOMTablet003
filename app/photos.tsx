@@ -4,12 +4,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import { Image, Keyboard, KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
+import * as FileSystem from 'expo-file-system/legacy';
+import {File, Paths} from 'expo-file-system';
 
 type PhotoType = {
   id: number;
-  imageData: string | null | undefined; // this will be base64
+  imageData: string; 
   description:string;
-  imageLocation: string | null | undefined
+  imageLocation: string;
 };
 
 const photos = () => {
@@ -44,13 +46,13 @@ useEffect( () => {
 //Set new photo 
 const [photos, setPhotos] = useState<PhotoType[]>([]);
 //Set ImageData (get from photo picked from gallery)
-const [imageData, setimageData] = useState<string | null |undefined>(undefined);
+const [imageData, setimageData] = useState<string>('');
 //Set Description of photo
 const [description, setDescription] = useState<string>('');
 //Set photo index
 const [photoIndex, setIndex] = useState<number>();
 //Set photo source (WIP)
-const [imageLocation, setImageLocation] = useState<string | null |undefined>(undefined);
+const [imageLocation, setImageLocation] = useState<string>('');
 
 
 //States to show add/edit/delete functions for photos
@@ -67,6 +69,18 @@ const hideModal = () => {setModal(false)};
 const[photoCreate, setPhotoCreate] = useState(false);
 const showCreate = () => setPhotoCreate(true);
 const hideCreate = () => setPhotoCreate(false);
+
+const imgDir = FileSystem.documentDirectory + 'images/';
+
+async function ensureDirExists() {
+  const dirInfo = await FileSystem.getInfoAsync(imgDir);
+  if (!dirInfo.exists) {
+    console.log("Directory doesn't exist, creating…");
+    await FileSystem.makeDirectoryAsync(imgDir, { intermediates: true });
+  }
+}
+
+
 
 //Getter function for photos + comments
 useEffect( () => {
@@ -89,9 +103,6 @@ useEffect( () => {
 
 const addPhoto = async () => {
   try {
-//save base64 of photo to local storage and get location of photo. property = imageSource
-    saveImage()
-
     const newPhoto: PhotoType = {
       id: Math.random(),
       imageData: imageData,
@@ -113,10 +124,10 @@ const addPhoto = async () => {
     }
 
     // Update the list of photos
+    saveImage(imageData)
     photos.push(newPhoto);
     setPhotos(photos);
     await AsyncStorage.setItem('my-photos', JSON.stringify(photos));
-    //Starting to wonder if storing in AsyncStorage is the best idea. My photos dissappear after a while.....
     setDescription('');
     alert("Submitted!");
     Keyboard.dismiss();
@@ -159,11 +170,7 @@ const getFilteredPhoto = async (id:number) => {
 
     if (!result.canceled) {
       console.log(result);
-      setimageData(result.assets[0].base64)
-      /**this JUST sets the URI. We need to change this so that the photo gets stored in local storage (file system??)
-       * and then the URL to that file location is set as the imagedata. Easy? It certainly sounds easy, but idk if it'll work.
-       * We'll find out 
-       **/
+      setimageData(result.assets[0].uri)
       
     } else {
       alert('You did not select any image.');
@@ -171,11 +178,12 @@ const getFilteredPhoto = async (id:number) => {
 
 //Save picked image to local storage (somehow)
 
-    const saveImage = () => {
-      //get the current imageData
-      const imageBlob = imageData;
-      //save it to local storage
-      //get location + set location in  imageLocation state
+    const saveImage = async (uri:string) => {
+      await ensureDirExists();
+      const filename = new Date().getTime() + '.jpg';
+      const dest = imgDir + filename
+      setImageLocation(dest);
+      await FileSystem.copyAsync ({from: uri, to: dest})
     }
 
 /** Views go here!! (although, some views may have to be made into functions like the previous pages) */
@@ -275,7 +283,7 @@ const PhotoThumbnail = ({entry, visible, showModal, deleteEntry, getFilteredPhot
    onPress={() => {
               getFilteredPhoto(entry.id);
               showModal();
-              console.log("URI: " + entry.imageData)
+              console.log("URI: " + entry.imageLocation)
             }}
             >
             <Image
