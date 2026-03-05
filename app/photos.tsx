@@ -1,11 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import { Image, Keyboard, KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import * as FileSystem from 'expo-file-system/legacy';
-import {File, Paths} from 'expo-file-system';
 
 type PhotoType = {
   id: number;
@@ -117,7 +116,7 @@ const addPhoto = async () => {
       return;
     }
 
-    else if (imageData == null){
+    else if (imageData == ""){
       alert("Please select a photo");
       setDescription('');
       Keyboard.dismiss();
