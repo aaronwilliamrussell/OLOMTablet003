@@ -130,6 +130,7 @@ const addPhoto = async () => {
     setDescription('');
     alert("Submitted!");
     Keyboard.dismiss();
+    hideCreate();
   }
   catch(error) {
     console.log (error);
