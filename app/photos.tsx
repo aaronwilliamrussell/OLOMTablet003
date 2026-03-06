@@ -69,6 +69,8 @@ const[photoCreate, setPhotoCreate] = useState(false);
 const showCreate = () => setPhotoCreate(true);
 const hideCreate = () => setPhotoCreate(false);
 
+//Ensure the directory to save images exists, if it doesn't, then make it
+
 const imgDir = FileSystem.documentDirectory + 'images/';
 
 const ensureDirExists = async() => {
@@ -137,7 +139,7 @@ const addPhoto = async () => {
   }
 }
 
-//Deleting a photo (if admin)
+//Deleting a photo (if admin) FIX THIS!! IT NEEDS TO ALSO GET DELETED FROM STORAGE AND UPDATE STATE TWICE
 
 const deletePhoto = async (id:number) => {
   try {
@@ -177,7 +179,7 @@ const getFilteredPhoto = async (id:number) => {
       alert('You did not select any image.');
     }}
 
-//Save picked image to local storage (somehow)
+//Save picked image to local storage 
 
     const saveImage = async (uri:string) => {
       await ensureDirExists();
