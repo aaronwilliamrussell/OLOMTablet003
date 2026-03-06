@@ -171,6 +171,7 @@ const getFilteredPhoto = async (id:number) => {
     if (!result.canceled) {
       console.log(result);
       setimageData(result.assets[0].uri)
+      setImageLocation(result.assets[0].uri)
       
     } else {
       alert('You did not select any image.');
