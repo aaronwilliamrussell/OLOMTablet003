@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react'
 import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
-import {useVideoPlayer, VideoView} from 'expo-video'
+import {useVideoPlayer, VideoThumbnail, VideoView} from 'expo-video'
 
 type VideoType = {
   id: number;
@@ -13,7 +13,6 @@ type VideoType = {
   title: string;
   description:string;
   videoLocation: string;
-  //Video thumbnail too? (first frame of video, maybe)
   //Video length???
   
 };
@@ -58,7 +57,7 @@ const [title, setTitle] = useState<string>('');
 //Set Description of video
 const [description, setDescription] = useState<string>('');
 //Set video index
-const [videoIndex, setIndex] = useState<number>();
+const [videoIndex, setIndex] = useState<number>(0);
 //Set video source 
 const [videoLocation, setVideoLocation] = useState<string>('');
 
@@ -73,7 +72,7 @@ const showCreate = () => setVideoCreate(true);
 const hideCreate = () => setVideoCreate(false);
 
 //Video player
-const player = useVideoPlayer(videoLocation, player => {
+const player = useVideoPlayer(videos[videoIndex].videoLocation, player => {
   player.loop = true;
 })
 
@@ -129,7 +128,7 @@ useEffect( () => {
 
     const saveVideo = async (uri:string) => {
       await ensureDirExists();
-      const filename = new Date().getTime() // + Whatever the final file format ends up being
+      const filename = new Date().getTime() + ".mp4"
       const dest = vidDir + filename
       setVideoLocation(dest);
       await FileSystem.copyAsync ({from: uri, to: dest})
@@ -144,7 +143,7 @@ const addVideo = async () => {
       videoData: videoData,
       title: title,
       description: description,
-      videoLocation: videoLocation
+      videoLocation: videoLocation,
     };
 
     if (description == ""){
@@ -235,7 +234,7 @@ const getFilteredVideo = async (id:number) => {
         <View style = {styles.playerContainer}>
           {/* Not sure why this is in two views, but it is */}
           <View style = {styles.playerHalf}>
-            {/* Video player (change to video)*/}
+            {/* Video player*/}
             <VideoView player = {player} style = {styles.vidPlayer}></VideoView>
             <View style = {styles.vidPlayer}></View>
             
