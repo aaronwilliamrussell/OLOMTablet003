@@ -1,11 +1,10 @@
-import { Image, Keyboard, KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React from 'react'
 import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
-import {useVideoPlayer, VideoThumbnail, VideoView} from 'expo-video'
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { useEffect, useState } from 'react';
+import { Keyboard, KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type VideoType = {
   id: number;
@@ -56,10 +55,17 @@ const [videoData, setVideoData] = useState<string>('');
 const [title, setTitle] = useState<string>('');
 //Set Description of video
 const [description, setDescription] = useState<string>('');
-//Set video index
-const [videoIndex, setIndex] = useState<number>(0);
 //Set video source 
 const [videoLocation, setVideoLocation] = useState<string>('');
+
+
+//States for selected videos
+//Set selected video
+const [selectedVideo, setSelectedVideo] = useState<string>('');
+//Set selected video title
+const [selectedTitle, setSelectedTitle] = useState<string>('Unknown');
+//Set selected video description
+const [selectedDisc, setSelectedDisc] = useState<string>('Unknown Video');
 
 //States to show add/edit/delete functions for videos
 const[adminButtons, setAdmin] = useState(false);
@@ -72,7 +78,7 @@ const showCreate = () => setVideoCreate(true);
 const hideCreate = () => setVideoCreate(false);
 
 //Video player
-const player = useVideoPlayer(videos[videoIndex].videoLocation, player => {
+const player = useVideoPlayer(selectedVideo, player => {
   player.loop = true;
 })
 
@@ -105,34 +111,6 @@ useEffect( () => {
   getVideos();
 },[]) 
 
-//Pick video from gallery
-
-  const pickVideoAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['videos'],
-      allowsEditing: false,
-      quality: 1,
-      base64: true
-    });
-
-    if (!result.canceled) {
-      console.log(result);
-      setVideoData(result.assets[0].uri)
-      setVideoLocation(result.assets[0].uri)
-      
-    } else {
-      alert('You did not select any videos.');
-    }}
-
-//Save picked image to local storage (somehow)
-
-    const saveVideo = async (uri:string) => {
-      await ensureDirExists();
-      const filename = new Date().getTime() + ".mp4"
-      const dest = vidDir + filename
-      setVideoLocation(dest);
-      await FileSystem.copyAsync ({from: uri, to: dest})
-    }    
 
 //Adding a new video
 
@@ -200,9 +178,41 @@ const deleteVideo = async (id:number) => {
 //Getting the index of the thumbnail selected so that the modal opens on the corresponding folder
 const getFilteredVideo = async (id:number) => {
     const indexofVid = videos.findIndex((entry) => entry.id === id)
-    //Set index
-    setIndex(indexofVid)
+    
+    setSelectedVideo(videos[indexofVid].videoLocation);
+    setSelectedTitle(videos[indexofVid].title);
+    setSelectedDisc(videos[indexofVid].description)
 }
+
+//Pick video from gallery
+
+  const pickVideoAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['videos'],
+      allowsEditing: false,
+      quality: 1,
+      base64: true
+    });
+
+    if (!result.canceled) {
+      console.log(result);
+      setVideoData(result.assets[0].uri)
+      setVideoLocation(result.assets[0].uri)
+      
+    } else {
+      alert('You did not select any videos.');
+    }}
+
+//Save picked image to local storage (somehow)
+
+    const saveVideo = async (uri:string) => {
+      await ensureDirExists();
+      const filename = new Date().getTime() + ".mp4"
+      const dest = vidDir + filename
+      setVideoLocation(dest);
+      await FileSystem.copyAsync ({from: uri, to: dest})
+    }    
+
 
 
 /** Views go here!! (although, some views may have to be made into functions like the previous pages) 
@@ -243,8 +253,8 @@ const getFilteredVideo = async (id:number) => {
           <View style = {styles.horizontalDivider}></View>
           {/* Description for video */}
           <View style = {styles.descHalf}>
-            <Text style = {styles.descTitle}>Title</Text>
-            <Text style = {styles.descDesc}>Description</Text>
+            <Text style = {styles.descTitle}>{selectedTitle}</Text>
+            <Text style = {styles.descDesc}>{selectedDisc}</Text>
           </View>
         </View>
 
@@ -256,17 +266,16 @@ const getFilteredVideo = async (id:number) => {
                           transparent>
                               <Pressable style = {styles.modalUpper} onPress = {hideCreate}/>
                               <KeyboardAvoidingView style= {styles.modalLower}>
-                                  <Text style = {styles.title}>Upload a photo!</Text>
+                                  <Text style = {styles.title}>Upload a video!</Text>
         
                                    {/* Video thumbnail */}
                                    {/* Video preview is going to show up here.
                                    Will have a delete button just in case the user selects the wrong video */}
-                                  <Image 
+                                  <View 
                                   style = {styles.videoThumbnail}
-                                  source={{uri: videoLocation}}
-                                  ></Image>
+                                  ></View>
         
-                                   {/* Photo from Gallery Button */}
+                                   {/* Video from Gallery Button */}
                                   <Pressable style = {styles.videoLibrary} onPress={() => pickVideoAsync()}> 
                                     <Text style = {styles.buttonText}>Select a Video</Text>
                                   </Pressable> 
