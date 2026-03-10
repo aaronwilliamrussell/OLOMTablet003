@@ -19,6 +19,7 @@ type VideoType = {
 };
 
 const videos = () => {
+  
   //Log in authentication
 useEffect( () => {
   const getLogin = async() => {
@@ -70,6 +71,11 @@ const hide = () => setAdmin(false);
 const[videoCreate, setVideoCreate] = useState(false);
 const showCreate = () => setVideoCreate(true);
 const hideCreate = () => setVideoCreate(false);
+
+//Video player
+const player = useVideoPlayer(videoLocation, player => {
+  player.loop = true;
+})
 
 //Ensure the directory to save videos exists, if it doesn't, then make it
 
@@ -199,11 +205,6 @@ const getFilteredVideo = async (id:number) => {
     setIndex(indexofVid)
 }
 
-//Video player
-const player = useVideoPlayer(videoLocation, player => {
-  player.loop = true;
-})
-
 
 /** Views go here!! (although, some views may have to be made into functions like the previous pages) 
  * 
@@ -235,6 +236,7 @@ const player = useVideoPlayer(videoLocation, player => {
           {/* Not sure why this is in two views, but it is */}
           <View style = {styles.playerHalf}>
             {/* Video player (change to video)*/}
+            <VideoView player = {player} style = {styles.vidPlayer}></VideoView>
             <View style = {styles.vidPlayer}></View>
             
           </View>
