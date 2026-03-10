@@ -211,7 +211,6 @@ const player = useVideoPlayer(videoLocation, player => {
 */
   return (
     <View style = {styles.container}>
-
       {/* Layout for the list of videos. (Change this to a ScrollView or a FlatList!) */}
         <ScrollView contentContainerStyle = {styles.vidList}>
           {/* Button appears if admin is logged in */}

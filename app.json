@@ -46,7 +46,7 @@
         {
           "initialOrientation": "landscape"
         }
-      ]
+      ],
     ],
     "experiments": {
       "typedRoutes": true,
