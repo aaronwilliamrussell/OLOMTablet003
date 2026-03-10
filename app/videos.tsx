@@ -5,10 +5,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react'
 import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
+import {useVideoPlayer, VideoView} from 'expo-video'
 
 type VideoType = {
   id: number;
-  videoData: string | undefined;
+  videoData: string;
   title: string;
   description:string;
   videoLocation: string;
@@ -49,8 +50,8 @@ useEffect( () => {
 
 //Set new video
 const [videos, setVideos] = useState<VideoType[]>([]);
-//Set VideoData (get from video picked from gallery)
-const [videoData, setVideoData] = useState<string | undefined>(undefined);
+//Set VideoData (get from video picked from gallery
+const [videoData, setVideoData] = useState<string>('');
 //Set title of video
 const [title, setTitle] = useState<string>('');
 //Set Description of video
@@ -164,6 +165,7 @@ const addVideo = async () => {
 
     // Update the list of videos
     //Since this is video, I think it would be a good idea to add a loading screen that goes away as soon as everything is done processing... just something to note
+    saveVideo(videoData)
     videos.push(newVideo);
     setVideos(videos);
     await AsyncStorage.setItem('my-videos', JSON.stringify(videos));
@@ -197,6 +199,11 @@ const getFilteredVideo = async (id:number) => {
     setIndex(indexofVid)
 }
 
+//Video player
+const player = useVideoPlayer(videoLocation, player => {
+  player.loop = true;
+})
+
 
 /** Views go here!! (although, some views may have to be made into functions like the previous pages) 
  * 
@@ -206,7 +213,7 @@ const getFilteredVideo = async (id:number) => {
     <View style = {styles.container}>
 
       {/* Layout for the list of videos. (Change this to a ScrollView or a FlatList!) */}
-        <View style = {styles.vidList}>
+        <ScrollView contentContainerStyle = {styles.vidList}>
           {/* Button appears if admin is logged in */}
                 {adminButtons && <Pressable
                 style={styles.addVideo}
@@ -214,20 +221,12 @@ const getFilteredVideo = async (id:number) => {
                 showCreate()
                 }}
                 ><Text>Add Video</Text></Pressable>}
-           {/* Within this list are the entries. Like the comments section and photo page, this will probably be a separate component, but for now, it isn't 
-          (Also make clickable!!!!) */}
-          <View style = {styles.videoEntry}>
-            {/* Entry text. Includes title and video length */}
-            <View style = {styles.entryText}>
-              <Text style = {styles.textTitle}>Title</Text>
-              <Text style = {styles.textLength}>Length</Text>
-            </View>
-            {/* Entry thumbnail */}
-            <View style = {styles.entryThumbnail}></View>
-          </View>
-          {/* Horizontal divider between entries */}
-          <View style = {styles.horizontalDivider}></View>
-        </View>
+
+                {videos.map (key =>
+                  <VideoEntry entry = {key} deleteEntry={deleteVideo} visible = {adminButtons} getFilteredVideo={getFilteredVideo}/>
+                )}
+
+        </ScrollView>
         
         {/* Divider between to keep things neat */}
         <View style = {styles.verticalDivider}></View>
@@ -236,8 +235,9 @@ const getFilteredVideo = async (id:number) => {
         <View style = {styles.playerContainer}>
           {/* Not sure why this is in two views, but it is */}
           <View style = {styles.playerHalf}>
-            {/* Video player */}
+            {/* Video player (change to video)*/}
             <View style = {styles.vidPlayer}></View>
+            
           </View>
           {/* Divider between player and description */}
           <View style = {styles.horizontalDivider}></View>
@@ -304,6 +304,38 @@ const getFilteredVideo = async (id:number) => {
 
 export default videos
 
+//The function that returns a thumbnail per video uploaded
+const VideoEntry = ({entry, visible, deleteEntry, getFilteredVideo} : {entry: VideoType, visible:boolean, deleteEntry:(id:number) => void, getFilteredVideo: (id:number) => void}) => {
+  return (
+     // Within this list are the entries. Like the comments section and photo page, this will probably be a separate component, but for now, it isn't (Also make clickable!!!!) 
+          <TouchableOpacity 
+          style = {styles.videoEntry}
+          onPress= {() => {
+            getFilteredVideo(entry.id);
+            //Set source for video player
+            console.log("Entry selected:" + entry.videoLocation)
+          }}>
+            {/* Delete button if admin */}
+            {visible && <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => {
+              deleteEntry(entry.id);
+              console.log("Deleted: " + entry.id);
+            }}>
+            <Ionicons  name= "trash" size={10} color={'grey'} /></TouchableOpacity>}
+            {/* Entry text. Includes title and video length  */}
+            <View style = {styles.entryText}>
+              <Text style = {styles.textTitle}>{entry.title}</Text>
+              <Text style = {styles.textLength}>Length</Text>
+            </View>
+            {/* Entry thumbnail */}
+            <View style = {styles.entryThumbnail}></View>
+            {/* Divider */}
+            <View style = {styles.horizontalDivider}></View>
+          </TouchableOpacity>      
+  )
+}
+
 const styles = StyleSheet.create({
   //Main page
   container:{
@@ -336,6 +368,11 @@ const styles = StyleSheet.create({
       margin: 10,
       height: "25%"
       
+    },
+
+     deleteButton: {
+      width: 10, 
+      height: 10,
     },
 
     entryText: {
