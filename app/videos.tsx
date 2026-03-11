@@ -245,9 +245,7 @@ const getFilteredVideo = async (id:number) => {
           {/* Not sure why this is in two views, but it is */}
           <View style = {styles.playerHalf}>
             {/* Video player*/}
-            <VideoView player = {player} style = {styles.vidPlayer}></VideoView>
-            <View style = {styles.vidPlayer}></View>
-            
+            <VideoView player = {player} style = {styles.vidPlayer}></VideoView>        
           </View>
           {/* Divider between player and description */}
           <View style = {styles.horizontalDivider}></View>

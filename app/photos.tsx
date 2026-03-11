@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     height: '100%',
     width: '100%',
-    backgroundColor:'#ff9900',
+    backgroundColor:'#00000027',
   },
 
   modalText: {
