@@ -183,7 +183,8 @@ const getFilteredPhoto = async (id:number) => {
 
     const saveImage = async (uri:string) => {
       await ensureDirExists();
-      const filename = new Date().getTime() + '.jpg';
+      //The below only seems to work for jpgs and pngs makes it wack out. Figure out some way to limit filetypes for photos
+      const filename = new Date().getTime();
       const dest = imgDir + filename
       setImageLocation(dest);
       await FileSystem.copyAsync ({from: uri, to: dest})
