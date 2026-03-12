@@ -54,7 +54,7 @@ const hide = () => setAdmin(false);
             {adminButtons && <Pressable
                             style={styles.editModel}
                             //Do on press here to open the editor for that specific model
-                            ><Text style = {styles.editText}>Add Video</Text></Pressable>}
+                            ><Text style = {styles.editText}>Edit</Text></Pressable>}
           </View>
           {/* Horizontal divider between entries */}
           <View style = {styles.horizontalDivider}></View>
