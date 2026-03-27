@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
+import { useFonts } from 'expo-font';
 import * as ImagePicker from 'expo-image-picker';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
@@ -17,6 +18,11 @@ type VideoType = {
 };
 
 const videos = () => {
+//Initializing some fancy fonts
+  useFonts({
+    'Madrid': require('../assets/fonts/Madrid.ttf')
+  }
+  )
   
   //Log in authentication
 useEffect( () => {
@@ -156,6 +162,7 @@ const addVideo = async () => {
     setTitle('');
     alert("Submitted!");
     Keyboard.dismiss();
+    hideCreate();
   }
   catch(error) {
     console.log (error);
@@ -203,7 +210,7 @@ const getFilteredVideo = async (id:number) => {
       alert('You did not select any videos.');
     }}
 
-//Save picked image to local storage (somehow)
+//Save picked video to local storage
 
     const saveVideo = async (uri:string) => {
       await ensureDirExists();
@@ -229,7 +236,7 @@ const getFilteredVideo = async (id:number) => {
                 onPress={() => {
                 showCreate()
                 }}
-                ><Text>Add Video</Text></Pressable>}
+                ><Text style={styles.addVideoText}>Add Video</Text></Pressable>}
 
                 {videos.map (key =>
                   <VideoEntry entry = {key} deleteEntry={deleteVideo} visible = {adminButtons} getFilteredVideo={getFilteredVideo}/>
@@ -354,20 +361,32 @@ const styles = StyleSheet.create({
     vidList:{
         flex:1,
         justifyContent:"flex-start",
-        backgroundColor:  'rgb(255, 255, 255)',
+        
   
         margin: 10,
         flexDirection: "column"
     },
     
     addVideo:{
-        backgroundColor:  'rgba(102, 102, 102, 0.7)',
+        backgroundColor:  '#59B6CF',
         borderRadius: 30,
         margin: 10,
         height: 100,
         justifyContent:"center",
         alignItems: "center",
     },
+    addVideoText: {
+    color:'rgba(255, 255, 255, 0.96)',
+    fontFamily: 'Madrid',
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textShadowColor: 'rgba(1,1,1,1)',
+    textShadowRadius: 10,
+    textShadowOffset: {width: 2, height:2},
+    padding: 0,
+    // transform: 'rotate(-10deg)',
+  },
 
     videoEntry: {
       justifyContent:"flex-start",
@@ -391,7 +410,7 @@ const styles = StyleSheet.create({
     },
 
     textTitle:{
-      fontFamily:'arial',
+      fontFamily:'Madrid',
       fontSize: 30,
     },
 
@@ -410,7 +429,6 @@ const styles = StyleSheet.create({
     playerContainer: {
       flex:2,
       justifyContent:"flex-start",
-      backgroundColor: 'rgb(255, 255, 255)',
       marginLeft: 10,
       marginTop: 10,
       marginBottom:10,
@@ -421,7 +439,6 @@ const styles = StyleSheet.create({
       flex:3,
       justifyContent:"center",
       alignItems: "center",
-      backgroundColor: 'rgb(255, 255, 255)',
       marginBottom: 10,
     }, 
 
@@ -438,22 +455,21 @@ const styles = StyleSheet.create({
     descHalf: {
       flex:1,
       justifyContent:"flex-start",
-      backgroundColor: 'rgb(255, 255, 255)',
       margin: 10,
       padding:10,
       
     },
 
     descTitle: {
-      fontFamily:'arial',
+      fontFamily:'Madrid',
       fontSize: 30,
-      color: 'rgba(102, 102, 102, 0.7)'
+      color: 'rgba(0, 0, 0, 0.7)'
     },
 
     descDesc: {
       fontFamily:'arial',
-      fontSize: 12,
-      color: 'rgba(102, 102, 102, 0.7)'
+      fontSize: 20,
+      color: '#5C5C5C'
     },
 
 
@@ -509,7 +525,7 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color:'rgb(255, 255, 255)',
-    fontFamily: "arial",
+    fontFamily: "Madrid",
     fontSize: 60,
     fontWeight: 'bold',
     textAlign: 'center',

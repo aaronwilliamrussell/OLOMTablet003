@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, FlatList, Keyboard, TouchableOpacity, Alert } from 'react-native'
-import React, {useEffect, useState} from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import {Filter} from 'bad-words'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Filter } from 'bad-words';
+import { useFonts } from 'expo-font';
+import { useEffect, useState } from 'react';
+import { FlatList, Keyboard, KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type EntryType = {
   id: number;
@@ -13,6 +14,12 @@ type EntryType = {
 };
 
 export default function guestbook () {
+//Initializing some fancy fonts
+  useFonts({
+    'Madrid': require('../assets/fonts/Madrid.ttf')
+  }
+  )
+
 //Functionality for leaving and viewing comments. Admins have the ability to delete posts!
 
 
@@ -256,7 +263,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(110, 110, 110, 0.51)',
     backgroundColor: 'rgb(255, 255, 255)',
     borderRadius: 10, 
-    textAlign: 'auto',
+    textAlign:'justify',
+    textAlignVertical:'top',
     padding:5,
     fontSize:30
   },
@@ -264,10 +272,10 @@ const styles = StyleSheet.create({
   submitButton:{
     flex:1,
     height:'auto',
-    width:'50%',
+    width:'70%',
     borderRadius: 30, 
     borderColor: 'rgb(255, 255, 255)',
-    backgroundColor: 'rgba(161, 161, 161, 0.7)',
+    backgroundColor: '#59B6CF',
     margin: 'auto'
   },
 
@@ -279,13 +287,12 @@ const styles = StyleSheet.create({
   titleText: {
     color:'rgba(61, 61, 61, 0.7)',
     fontSize: 30,
-    fontWeight: 'bold',
+    fontFamily: 'Madrid'
   },
   buttonText: {
     color:'rgb(255, 255, 255)',
-    fontFamily: "arial",
-    fontSize: 60,
-    fontWeight: 'bold',
+    fontFamily: "Madrid",
+    fontSize: 50,
     paddingTop: 15,
     textAlign: 'center',
   },
@@ -299,7 +306,7 @@ const styles = StyleSheet.create({
   commentName: {
     color:'rgba(61, 61, 61, 0.7)',
     fontSize: 30,
-    fontWeight: 'bold',
+    fontFamily: 'Madrid'
   },
 
   commentComment: {

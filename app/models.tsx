@@ -1,9 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const models = () => {
-
+//Initializing some fancy fonts
+  useFonts({
+    'Madrid': require('../assets/fonts/Madrid.ttf')
+  }
+  )
   //Log in authentication
 useEffect( () => {
   const getLogin = async() => {
@@ -95,7 +100,6 @@ const styles = StyleSheet.create({
     vidList:{
         flex:1,
         justifyContent:"flex-start",
-        backgroundColor:  'rgb(255, 255, 255)',
         margin: 10,
         flexDirection: "column"
     },
@@ -117,12 +121,13 @@ const styles = StyleSheet.create({
     },
 
     textTitle:{
-      fontFamily:'arial',
+      fontFamily:'Madrid',
       fontSize: 50,
+      color: '#535353'
     },
 
     editModel:{
-        backgroundColor:  'rgba(102, 102, 102, 0.7)',
+        backgroundColor:  '#59B6CF',
         borderRadius: 20,
         padding: 10,
         height: 60,
@@ -133,13 +138,13 @@ const styles = StyleSheet.create({
     editText: {
       fontFamily:'arial',
       fontSize: 30,
+      color:'#ffffff'
     },
 
     
     playerContainer: {
       flex:2,
       justifyContent:"flex-start",
-      backgroundColor: 'rgb(255, 255, 255)',
       marginLeft: 10,
       marginTop: 10,
       marginBottom:10,
@@ -150,14 +155,13 @@ const styles = StyleSheet.create({
       flex:3,
       justifyContent:"center",
       alignItems: "center",
-      backgroundColor: 'rgb(255, 255, 255)',
       marginBottom: 10,
     }, 
 
     vidPlayer: {
       flex:1,
       justifyContent:"center",
-      backgroundColor: 'rgba(110, 110, 110, 0.51)',
+      backgroundColor: '#535353',
       width: '80%',
       height: 'auto',
       margin:10,
@@ -167,22 +171,21 @@ const styles = StyleSheet.create({
     descHalf: {
       flex:1,
       justifyContent:"flex-start",
-      backgroundColor: 'rgb(255, 255, 255)',
       margin: 10,
       padding:10,
       
     },
 
     descTitle: {
-      fontFamily:'arial',
+      fontFamily:'Madrid',
       fontSize: 50,
-      color: 'rgba(102, 102, 102, 0.7)'
+      color: '#535353'
     },
 
     descDesc: {
       fontFamily:'arial',
       fontSize: 30,
-      color: 'rgba(102, 102, 102, 0.7)'
+      color: '#535353'
     },
 
 

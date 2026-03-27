@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View, TextInput, Pressable, Modal, KeyboardAvoidingView, FlatList, Keyboard, TouchableOpacity, Alert } from 'react-native'
-import React, {useEffect, useState} from 'react'
-import {Calendar} from 'react-native-calendars'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import {Filter} from 'bad-words'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Filter } from 'bad-words';
+import { useEffect, useState } from 'react';
+import { FlatList, Keyboard, KeyboardAvoidingView, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Calendar } from 'react-native-calendars';
 
 type EventType = {
   id: number;
@@ -20,6 +20,14 @@ type EventType = {
 const events = () => {
 //Filter for all those bad words
 const filter = new Filter();
+
+//Every month as a name
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
+//Current date
+const today = new Date().toDateString()
 
 //Log in authentication
 useEffect( () => {
@@ -64,7 +72,10 @@ const [time, setTime] = useState<string>('');
 const [amPm, setAmpm] = useState<string>('');
 //Selected date (string)
 const [selected, setSelected] = useState('');
-
+//Selected Month (string)
+const [selectedMonth, setSelectedMonth] = useState<number>(0);
+//Selected day (string) (yes, I know...this is confusing)
+const [selectedDay, setSelectedDay] =useState<number>(0);
 
 //Modal that pops up when you select a date
 const[modal, setModal] = useState(false);
@@ -135,6 +146,8 @@ const addEvent = async () => {
     setAmpm('');
     alert("Submitted!");
     Keyboard.dismiss();
+    hideCreate();
+    hideModal();
   }
   catch(error) {
     console.log (error);
@@ -149,6 +162,7 @@ const deleteEvent = async (id:number) => {
     await AsyncStorage.setItem("my-events", JSON.stringify(updated));
     setAllEvents(updated);
     setEvents(updated);
+    hideModal();
   } 
   catch(error) {
     console.log(error);
@@ -166,10 +180,27 @@ const editEvent = () => {
 const getEventForDay = (selectedDate: string) => {
   // set selected for calendar marking/modal
   setSelected(selectedDate);
+  //Selected month setting. Split it or something, then plug into array uhhh maybe make this a function instead...
+  const month = + selectedDate.split('-')[1]
+  setSelectedMonth(month - 1);
+  //Selected day setting. Way easier. Split string to middle
+  const dayString = + selectedDate.split('-')[2]
+  setSelectedDay(dayString);
   // filter from the master list using the passed-in date (do NOT rely on 'selected' state immediately)
   const filteredEvents = allEvents.filter((item) => item.eventDate === selectedDate);
   setEvents(filteredEvents);
 };
+
+//Marking the calendar for days that have events
+const markedDay: { [date: string]: { selected: boolean; marked: boolean; selectedColor: string } } = {};
+
+allEvents.map((item) => {
+  markedDay[item.eventDate] = {
+    selected: true,
+    marked: true,
+    selectedColor: '#84cf59'
+  };
+});
 
   return (
     <View style = {styles.container}>
@@ -182,17 +213,25 @@ const getEventForDay = (selectedDate: string) => {
     
   }}
   // Specify the current date
-  current={new Date().toDateString()}
+  current={today}
   // Callback that gets called when the user selects a day
   onDayPress= {day =>  {
     getEventForDay(day.dateString)
     showModal();
     //Open modal for date 
   }}
-  // Mark specific dates as marked (do this later)
+  // Mark specific dates as marked 
+
   markedDates={{
-    [selected]: {selected: true, disableTouchEvent: false, selectedColor: 'red'}
+    ...markedDay,
+    [selected]: {selected: true, disableTouchEvent: false, selectedColor: '#bbbbbb'},
+    //For each event in Events, use the date string to mark it
+    markedDay
   }}
+
+      theme={{
+        todayTextColor: '#59B6CF',
+      }}
   
 />
 
@@ -208,9 +247,7 @@ const getEventForDay = (selectedDate: string) => {
             transparent>
                 <Pressable style = {styles.eventModalUpper} onPress = {hideModal}/>
                 <View style= {styles.eventModalLower}>
-                    <Text>{selected}</Text>
-                    <Text>Just testing something....</Text>
-
+                    <Text style = {styles.eventName}>{monthNames[selectedMonth] + " " + selectedDay }</Text>
                      {/* Events Viewer Placeholder*/}
                           <View style = {styles.eventsViewer}>
                             {/* Figure out a way to only display the events for the date selected*/}
@@ -229,7 +266,7 @@ const getEventForDay = (selectedDate: string) => {
                             onPress={() => {
                               showCreate()
                             }}
-                            ></Pressable>}
+                            ><Text style={styles.buttonText}>+</Text></Pressable>}
                           </View> 
                         
                 </View>
@@ -309,10 +346,10 @@ const getEventForDay = (selectedDate: string) => {
 const EventItem = ({ev, visible, deleteEntry} : {ev: EventType, visible:boolean, deleteEntry: (id: number) => void}) => {
   return (
   <View style = {styles.eventEntry}>
-            
-            <Text style = {styles.eventName}>{ev.eventDate} </Text>
-            <Text style = {styles.eventName}>{"\n"}{ev.title}</Text>
-            <Text style = {styles.eventDescription}>{"\n"}{ev.description} </Text>
+            <Text style = {styles.eventName}>{"\n"}{ev.title}{"   |   "}<Text style = {styles.eventTime}>{ev.time + " " + ev.amPM}</Text></Text>
+            <Text style = {styles.eventLocation}>{ev.location} </Text>
+            <View style = {styles.locationSep}></View>
+            <Text style = {styles.eventDescription}>{ev.description} </Text>
 
             {/* Admin buttons */}
             {/* Delete button */}
@@ -365,13 +402,13 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
   },
-  //The problem lies here....let's keep tabs on it
+
    eventsViewer: {
-    backgroundColor: 'rgb(233, 233, 233)',
-    borderColor:'rgba(9, 255, 0, 0.51)',
-    borderWidth: 2,
+    backgroundColor: 'rgb(255, 255, 255)',
+    borderColor: 'rgb(233, 233, 233)',
     borderRadius: 30,
-    width: "100%",
+    borderWidth:5,
+    width: "95%",
     height: "90%",
   },
   eventEntry: {
@@ -381,8 +418,14 @@ const styles = StyleSheet.create({
   },
    eventName: {
     color:'rgba(61, 61, 61, 0.7)',
-    fontSize: 30,
-    fontWeight: 'bold',
+    fontSize: 40,
+    fontFamily:'Madrid'
+  },
+
+  eventTime: {
+    color:'#59B6CF',
+    fontSize: 35,
+    fontFamily:'Madrid'
   },
 
   eventDescription: {
@@ -390,6 +433,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+
+   eventLocation: {
+    color:'#59B6CF',
+    fontSize: 25,
+    fontStyle: 'italic'
+  },
+
   deleteButton: {
     flexDirection: 'row-reverse',
   },
@@ -399,18 +449,28 @@ const styles = StyleSheet.create({
     height: 2,
     marginTop: 50,
     alignSelf: 'center'
-
+  },
+    locationSep: {
+    backgroundColor:'rgba(148, 148, 148, 0.7)',
+    width: '100%',
+    height: 2,
+    marginBottom: 10,
+    marginTop:10,
+    alignSelf: 'center'
   },
   addButton: {
-    backgroundColor:'rgba(0, 38, 255, 0.7)',
-    borderColor:'rgba(0, 38, 255, 0.7)',
+    backgroundColor:'#59B6CF',
     borderRadius:30,
     height:100,
     width:100,
+    justifyContent:"center",
+    alignItems: "center",
+    margin: 20
   },
   nameInput: {
     flex:0.5,
     height: 'auto',
+    width: '20%',
     borderWidth: 2,
     borderColor: 'rgba(110, 110, 110, 0.51)',
     backgroundColor: 'rgb(255, 255, 255)',
@@ -422,6 +482,7 @@ const styles = StyleSheet.create({
     commentInput: {
     flex:5,
     height: 'auto',
+    width: '50%',
     marginBottom: '1%',
     borderWidth: 2,
     borderColor: 'rgba(110, 110, 110, 0.51)',
@@ -434,20 +495,29 @@ const styles = StyleSheet.create({
     submitButton:{
     flex:1,
     height:'auto',
-    width:'50%',
+    width:'20%',
     borderRadius: 30, 
     borderColor: 'rgb(255, 255, 255)',
     backgroundColor: 'rgba(161, 161, 161, 0.7)',
-    margin: 'auto'
+    justifyContent:"center",
+    alignItems: "center",
+    margin: 20
   },
 
   buttonText: {
     color:'rgb(255, 255, 255)',
     fontFamily: "arial",
-    fontSize: 60,
+    fontSize: 30,
     fontWeight: 'bold',
-    paddingTop: 15,
-    textAlign: 'center',
+    
+  },
+   testCurrentEvents: {
+    backgroundColor: 'rgb(255, 255, 255)',
+    borderColor: 'rgb(233, 233, 233)',
+    borderRadius: 30,
+    borderWidth:5,
+    width: "95%",
+    flex:1
   },
 
 })

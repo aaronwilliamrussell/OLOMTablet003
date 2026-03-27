@@ -199,7 +199,7 @@ const getFilteredPhoto = async (id:number) => {
       onPress={() => {
       showCreate()
       }}
-      ><Text>Add photo</Text></Pressable>}
+      ><Text style = {styles.addButtonText}>Add Photo</Text></Pressable>}
 
       {/* Photo Gallery */}
       <ScrollView contentContainerStyle = {styles.gallery}>
@@ -360,15 +360,28 @@ const styles = StyleSheet.create({
     },
 
     addPhoto: {
-      height:'10%',
-      width:'100%',
+      height:'20%',
+      width:'90%',
       borderRadius: 30, 
-      borderColor: 'rgb(255, 255, 255)',
-      backgroundColor: 'rgba(27, 107, 255, 0.7)',
-      margin: 'auto',
+      backgroundColor: '#59B6CF',
+      margin: 10,
       justifyContent:"center",
-      alignItems:"center"
+      alignItems:"center",
+      transform: [{translateX: 50}]
     },
+
+        addButtonText: {
+    color:'rgba(255, 255, 255, 0.96)',
+    fontFamily: "arial",
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textShadowColor: 'rgba(1,1,1,1)',
+    textShadowRadius: 10,
+    textShadowOffset: {width: 2, height:2},
+    padding: 0,
+    // transform: 'rotate(-10deg)',
+  },
 
     eventModalUpper: {
       height:100,
@@ -387,6 +400,7 @@ const styles = StyleSheet.create({
     color:'rgba(61, 61, 61, 0.7)',
     fontSize: 30,
     fontWeight: 'bold',
+    margin: 20
   },
     
   
@@ -394,17 +408,20 @@ const styles = StyleSheet.create({
     color:'rgba(61, 61, 61, 0.7)',
     fontSize: 20,
     fontWeight: 'bold',
+    margin: 10
   },
 
   commentInput: {
     flex:1,
     height: 'auto',
+    width: '50%',
     marginBottom: '1%',
     borderWidth: 2,
     borderColor: 'rgba(110, 110, 110, 0.51)',
     backgroundColor: 'rgb(255, 255, 255)',
     borderRadius: 10, 
     textAlign: 'auto',
+    textAlignVertical:'top',
     padding:5,
     fontSize:30
   },
@@ -414,9 +431,10 @@ const styles = StyleSheet.create({
     height:'auto',
     width:'50%',
     borderRadius: 30, 
-    borderColor: 'rgb(255, 255, 255)',
-    backgroundColor: 'rgb(45, 255, 38)',
-    margin: 'auto'
+    backgroundColor: '#59B6CF',
+    margin: 10,
+    alignContent: 'center',
+    justifyContent:'center'
   },
 
   photoLibrary:{
@@ -424,9 +442,10 @@ const styles = StyleSheet.create({
     height:'auto',
     width:'50%',
     borderRadius: 30, 
-    borderColor: 'rgb(255, 255, 255)',
-    backgroundColor: 'rgb(255, 72, 0)',
-    margin: 'auto'
+    backgroundColor: '#59B6CF',
+    margin: 10,
+    alignContent: 'center',
+    justifyContent:'center'
   },
 
   buttonText: {
@@ -435,6 +454,7 @@ const styles = StyleSheet.create({
     fontSize: 60,
     fontWeight: 'bold',
     textAlign: 'center',
+    textAlignVertical:'center'
   },
   photoModal:{
       flex: 1, 
@@ -446,7 +466,10 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: 'contain',
     height: 50,
-    width:50,
+    width:'10%',
+    borderColor:'rgba(110, 110, 110, 0.51)',
+    borderWidth: 2,
+    borderRadius: 10,
     
   },
 

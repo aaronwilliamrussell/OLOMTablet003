@@ -13,6 +13,7 @@ import {
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NfcManager, { NfcTech } from "react-native-nfc-manager";
 
 export default function Home () {
 
@@ -35,8 +36,35 @@ changeScreenOrientation();
 
     //Run checks
     console.log("Admin status: " + loggedIn)
-    
-    //Function to log in (add the NFC stuff later!)
+
+   //NFC stuff part two
+   // Pre-step, call this before any NFC operations
+  NfcManager.start();
+
+async function readNdef() {
+    try {
+      // register for the NFC tag with NDEF in it
+      await NfcManager.requestTechnology(NfcTech.MifareClassic);
+      // the resolved tag object will contain `ndefMessage` property
+      const tag = await NfcManager.getTag();
+      if(tag?.id == "84BE0F10"){
+        adminLogIn()
+      }
+      else {
+        alert("Wrong key!")
+      }
+    } catch (ex) {
+      console.warn('Oops!', ex);
+    } finally {
+      // stop the nfc scanning
+      NfcManager.cancelTechnologyRequest();
+    }
+  }
+  
+
+
+
+    //Function to log in 
     const adminLogIn = async() => {
         try{
               if (!loggedIn){
@@ -68,13 +96,14 @@ changeScreenOrientation();
         }
         else{
             show();
+            readNdef();
         }
         }
         catch (error){console.log(error)}
     }
    
     
-   
+   adminLogIn(); //get rid of this after!!!!!!!
     return (
         <View style = {styles.banner}>
            {/* Index banner */}
@@ -82,9 +111,8 @@ changeScreenOrientation();
               style = {styles.image002}
               source={require('../assets/home/logo.png')}
               />
-              <Image
+              <View
               style = {styles.image}
-              source={require('../assets/home/olom001.jpg')}
               />   
               
               <View style = {styles.grid}>
@@ -109,7 +137,7 @@ changeScreenOrientation();
             <Pressable style = {styles.button}>
              <ImageBackground
             //  this link is a placeholder
-              source={{uri: 'https://t4.ftcdn.net/jpg/00/98/31/69/360_F_98316912_2Mmdy5mluCDJSNUmU5vx5KLsMZX5s8Wl.jpg'}}
+              source={{uri: 'https://closler.org/wp-content/uploads/2019/02/film-reel.png'}}
               style = {styles.buttonImage}
               imageStyle={{borderRadius:30}}
               >
@@ -154,7 +182,7 @@ changeScreenOrientation();
             <Pressable style = {styles.button}>
              <ImageBackground
             //  this link is a placeholder
-              source={{uri: 'https://scontent.fyhz1-1.fna.fbcdn.net/v/t1.6435-9/42854466_1860628977349207_3131969244065955840_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=833d8c&_nc_ohc=B6BLnkjbNwcQ7kNvwHA-len&_nc_oc=AdlXuguWEbpeLqCUtk5NFH84mTuz1GXYmtVW7eZSVK0u0p8hpomC5gYBNGIkRL28jjo&_nc_zt=23&_nc_ht=scontent.fyhz1-1.fna&_nc_gid=mJa9c2kbIu0itzaRf8EocA&oh=00_AfpkrZuZE9iAqRH-w7-2f1t42MRua-MEl4w3eSOv8Ns9rw&oe=69960D5A'}}
+              source={{uri: 'https://www.ourladyofmercynl.com/wp-content/uploads/2025/03/IMG_4874.jpg'}}
               style = {styles.buttonImage}
               imageStyle={{borderRadius:30}}
               >
@@ -194,9 +222,6 @@ changeScreenOrientation();
                 <View style= {styles.adminModalLower}>
                     <Text style = {styles.text}>Tap your security card here!</Text>
                     <Ionicons name = "radio-outline" style = {styles.text}></Ionicons>
-                    <Pressable style = {styles.tempButton} onPress= {adminLogIn}>
-                        <Text style = {styles.buttonText}>...or just click here because we don't have an NFC method yet</Text>
-                    </Pressable>
                 </View>
             </Modal>
         </View>
@@ -230,7 +255,7 @@ const styles = StyleSheet.create({
     shadowColor: 'rgb(0, 0, 0)',
     shadowOffset: {width:10, height:10},
     shadowRadius: 2,
-
+    backgroundColor: '#59B6CF'
     },
 
     image002:{
