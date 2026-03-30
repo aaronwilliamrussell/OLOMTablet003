@@ -317,7 +317,7 @@ const ModalPhoto = ({entry} : {entry: PhotoType}) =>{
           source={{uri: entry.imageLocation}}
           style= {styles.modalImage}
           ></Image>
-          <Text>{entry.description}</Text>
+          <Text style = {styles.modalText}>{entry.description}</Text>
         </View>
   )
 }
@@ -342,14 +342,12 @@ const styles = StyleSheet.create({
     galleryThumbnailContainer: {
       width: 100, 
       height: 100,
-      backgroundColor: 'rgba(34, 137, 255, 0.7)',
       margin: 10
     },
 
     thumbnailImage: {
       width: '100%', 
       height: '100%',
-      backgroundColor: 'rgba(255, 34, 34, 0.7)'
     },
 
     deleteButton: {
@@ -495,7 +493,7 @@ const styles = StyleSheet.create({
 
   modalImage: {
     resizeMode: 'contain',
-    height: '100%',
+    height: '90%',
     width: '100%',
     backgroundColor:'#00000027',
   },
@@ -503,7 +501,7 @@ const styles = StyleSheet.create({
   modalText: {
     color:'rgb(255, 255, 255)',
     fontFamily: "arial",
-    fontSize: 10,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
   }

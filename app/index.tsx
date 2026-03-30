@@ -2,13 +2,13 @@ import { Link } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useState } from 'react';
 import {
-    Image,
-    ImageBackground,
-    Modal,
-    Pressable,
-    StyleSheet,
-    Text,
-    View
+  Image,
+  ImageBackground,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -102,8 +102,6 @@ async function readNdef() {
         catch (error){console.log(error)}
     }
    
-    
-   adminLogIn(); //get rid of this after!!!!!!!
     return (
         <View style = {styles.banner}>
            {/* Index banner */}
@@ -134,33 +132,15 @@ async function readNdef() {
         
         {/* Videos*/}
             <Link href = "/videos" style={{marginHorizontal:'auto'}} asChild>
-            <Pressable style = {styles.button}>
-             <ImageBackground
-            //  this link is a placeholder
-              source={{uri: 'https://closler.org/wp-content/uploads/2019/02/film-reel.png'}}
-              style = {styles.buttonImage}
-              imageStyle={{borderRadius:30}}
-              >
-             <Text style = {styles.buttonText}>Videos </Text> 
-             </ImageBackground>
+            <Pressable style = {styles.buttonContainer}>
+              <View style={styles.buttonContainer}>
+                <View style={styles.textContainer}>
+                  <Text style = {styles.buttonText}>Videos </Text> 
+                </View>
+                <Image style = {styles.videoImage} source={{uri: 'https://t4.ftcdn.net/jpg/00/98/31/69/360_F_98316912_2Mmdy5mluCDJSNUmU5vx5KLsMZX5s8Wl.jpg'}}></Image>
+              </View>
             </Pressable>
             </Link>
-           
-        
-        {/* 3D Models*/}
-            <Link href = "/models" style={{marginHorizontal:'auto'}} asChild>
-            <Pressable style = {styles.button}>
-             <ImageBackground
-            //  this link is a placeholder
-              source={{uri: 'https://media.sketchfab.com/models/a1e63357f3fa4a8d9a310db3ae35c2fb/thumbnails/91123f9d8d614f8b99011ac454045e76/0b8997d7bede43a785f7d8b060fcdbce.jpeg'}}
-              style = {styles.buttonImage}
-              imageStyle={{borderRadius:30}}
-              >
-             <Text style = {styles.buttonText}>3D Models </Text> 
-             </ImageBackground>
-            </Pressable>
-            </Link>
-            
         
         {/*History*/}
             <Link href = "/history" style={{marginHorizontal:'auto'}} asChild>
@@ -291,6 +271,14 @@ const styles = StyleSheet.create({
     shadowOffset: {width:2, height:2},
     shadowRadius: 10,
     },
+
+    textContainer: {
+      position: 'absolute',
+      justifyContent: 'center',
+      alignContent:'center',
+      alignSelf:'center',
+      zIndex: 3
+    },
    
     buttonText: {
     color:'rgba(255, 255, 255, 0.96)',
@@ -338,10 +326,29 @@ const styles = StyleSheet.create({
     padding: 10,
     height:'auto',
     width:'auto',
-    borderRadius: 30, 
+    borderRadius: 60, 
     borderColor: 'rgba(255, 255, 255, 0)',
     backgroundColor: 'rgb(68, 71, 241)',
     zIndex:3
+  },
+
+  //Fixes for buttons:
+
+  buttonContainer: {
+    flex:1,
+    justifyContent:'center',
+    borderRadius: 30,
+    shadowColor: 'rgba(110, 110, 110, 0.51)',
+    shadowOffset: {width:2, height:2},
+    shadowRadius: 10,
+    overflow: 'hidden',
+  },
+
+  videoImage: {
+    resizeMode:"cover",
+    height: '100%',
+    width:'150%',
+    transform: [{translateY: 5}]
   }
 
 })

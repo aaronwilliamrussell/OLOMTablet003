@@ -27,9 +27,6 @@ export default function RootLayout() {
     <Stack.Screen name= "videos" options={{headerShown: true,
     headerTitle: 'Videos'
     }}/>
-    <Stack.Screen name= "models" options={{headerShown: true,
-    headerTitle: '3D Models'
-    }}/>
      <Stack.Screen name= "history" options={{headerShown: true,
     headerTitle: 'Our History'
     }}/>
@@ -40,5 +37,6 @@ export default function RootLayout() {
     headerTitle: 'Guestbook'
     }}/>
     
+
     </Stack>;
 }
