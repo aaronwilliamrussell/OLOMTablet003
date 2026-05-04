@@ -65,7 +65,9 @@ useStickyImmersiveReset();
      <Stack.Screen name= "guestbook" options={{headerShown: true,
     headerTitle: 'Guestbook'
     }}/>
-    
+    <Stack.Screen name= "models" options={{headerShown: true,
+    headerTitle: '3D Models'
+    }}/>
 
     </Stack>;
 }

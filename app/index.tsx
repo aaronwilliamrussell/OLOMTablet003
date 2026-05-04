@@ -185,6 +185,22 @@ async function readNdef() {
              </ImageBackground>
             </Pressable>
             </Link>
+
+            {/* Models */}
+            <Link href = "/models" style={{marginHorizontal:'auto'}} asChild>
+            <Pressable style = {styles.button} >
+             <ImageBackground
+            //  this link is a placeholder
+              source={{uri: 'https://images.computerhistory.org/revonline/images/102672453-03-01.jpg?w=600'}}
+              style = {styles.buttonImage}
+              imageStyle={{borderRadius:30}}
+              >
+             <Text style = {styles.buttonText}>Models </Text> 
+             </ImageBackground>
+            </Pressable>
+            </Link> 
+
+
               </View>
               
         {/* Administrative button */}
