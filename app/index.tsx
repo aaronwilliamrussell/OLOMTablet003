@@ -2,6 +2,7 @@ import { Link } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   ImageBackground,
   Modal,
@@ -202,6 +203,7 @@ async function readNdef() {
                 <View style= {styles.adminModalLower}>
                     <Text style = {styles.text}>Tap your security card here!</Text>
                     <Ionicons name = "radio-outline" style = {styles.text}></Ionicons>
+                    <ActivityIndicator size="large" color="#59B6CF" ></ActivityIndicator>
                 </View>
             </Modal>
         </View>

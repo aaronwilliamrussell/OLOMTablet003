@@ -29,6 +29,11 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
+
+     "androidStatusBar": {
+    "hidden": true
+  },
+
     "plugins": [
       "expo-router",
       [
@@ -50,7 +55,19 @@
         }
       ],
       "react-native-nfc-manager",
-      "expo-font"
+      "expo-font",
+     
+      [
+      "expo-navigation-bar",
+      {
+        "position": "absolute",
+        "visibility": "hidden",
+        "behavior": "overlay-swipe",
+        "backgroundColor": "#00000080"
+      }
+    ]
+
+    
     ],
     "experiments": {
       "typedRoutes": true,

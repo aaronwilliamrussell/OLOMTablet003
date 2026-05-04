@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useFonts } from 'expo-font';
+import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
@@ -13,7 +14,7 @@ type VideoType = {
   title: string;
   description:string;
   videoLocation: string;
-  //Video length???
+  videoLength: string;
   
 };
 
@@ -63,6 +64,8 @@ const [title, setTitle] = useState<string>('');
 const [description, setDescription] = useState<string>('');
 //Set video source 
 const [videoLocation, setVideoLocation] = useState<string>('');
+//Set video length
+const [videoLength, setVideoLength] = useState<string | any>('');
 
 
 //States for selected videos
@@ -128,6 +131,7 @@ const addVideo = async () => {
       title: title,
       description: description,
       videoLocation: videoLocation,
+      videoLength: videoLength,
     };
 
     if (description == ""){
@@ -202,9 +206,15 @@ const getFilteredVideo = async (id:number) => {
     });
 
     if (!result.canceled) {
-      console.log(result);
+      console.log(result.assets[0]);
       setVideoData(result.assets[0].uri)
       setVideoLocation(result.assets[0].uri)
+      //Set the length of the video
+      if (typeof result.assets[0].duration === 'number'){
+        let minutes = Math.floor(result.assets[0].duration / 60000)
+        let seconds = ((result.assets[0].duration % 60000) / 1000);
+        setVideoLength(minutes + ":" + (seconds < 10 ? '0' : '') + seconds)
+      }
       
     } else {
       alert('You did not select any videos.');
@@ -321,7 +331,7 @@ export default videos
 //The function that returns a thumbnail per video uploaded
 const VideoEntry = ({entry, visible, deleteEntry, getFilteredVideo} : {entry: VideoType, visible:boolean, deleteEntry:(id:number) => void, getFilteredVideo: (id:number) => void}) => {
   return (
-     // Within this list are the entries. Like the comments section and photo page, this will probably be a separate component, but for now, it isn't (Also make clickable!!!!) 
+     // Within this list are the entries
           <TouchableOpacity 
           style = {styles.videoEntry}
           onPress= {() => {
@@ -340,10 +350,10 @@ const VideoEntry = ({entry, visible, deleteEntry, getFilteredVideo} : {entry: Vi
             {/* Entry text. Includes title and video length  */}
             <View style = {styles.entryText}>
               <Text style = {styles.textTitle}>{entry.title}</Text>
-              <Text style = {styles.textLength}>Length</Text>
+              <Text style = {styles.textLength}>{entry.videoLength}</Text>
             </View>
             {/* Entry thumbnail */}
-            <View style = {styles.entryThumbnail}></View>
+            <Image source = {entry.videoLocation}style = {styles.entryThumbnail}></Image>
             {/* Divider */}
             <View style = {styles.horizontalDivider}></View>
           </TouchableOpacity>      
